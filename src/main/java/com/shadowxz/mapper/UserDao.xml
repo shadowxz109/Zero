@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shadowxz.dao.UserDao" >
+  <resultMap id="BaseResultMap" type="User" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="int" />
+      <arg column="user_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="email" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="active" jdbcType="INTEGER" javaType="int" />
+      <arg column="validateCode" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sex" jdbcType="INTEGER" javaType="int" />
+      <arg column="self_introduce" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="state" jdbcType="INTEGER" javaType="int" />
+      <arg column="register_time" jdbcType="DATE" javaType="java.util.Date" />
+      <arg column="massage_number" jdbcType="INTEGER" javaType="int" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ResultMapForLogin" type="User" >
+      <id property="id" column="id" />
+      <result property="userName" column="user_name" />
+      <result property="password" column="password" />
+      <result property="active" column="active" />
+  </resultMap>
+
+  <resultMap id="DetailResultMap" type="User">
+    <result property="id" column="id"/>
+    <result property="userName" column="user_name" />
+    <result property="email" column="email" />
+    <result property="sex" column="sex" />
+    <result property="selfIntroduce" column="self_introduce" />
+    <result property="registerTime" column="register_time" />
+    <collection property="posts" ofType="Post">
+      <result property="id" column="post_id" />
+      <result property="title" column="post_title" />
+      <result property="pulishTime" column="post_pulish_time" />
+    </collection>
+    <collection property="replies" ofType="Reply">
+      <result property="id" column="reply_id" />
+      <result property="postId" column="reply_post_id" />
+      <result property="content" column="reply_content" />
+      <result property="replyTime" column="reply_reply_time"/>
+      <association property="post" javaType="Post">
+        <result property="title" column="reply_post_title" />
+      </association>
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_name, email, active, validateCode, sex, self_introduce, state, register_time, massage_number
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+    select 
+    <include refid="Base_Column_List" />
+    from user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectDetailUserById" resultMap="DetailResultMap" parameterType="int">
+    SELECT
+    user_name,email,sex,self_introduce,register_time,
+    U.id AS id,
+    P1.id AS post_id,
+    P1.title AS post_title,
+    P1.pulish_time AS post_pulish_time,
+    R.id AS reply_id,
+    R.post_id AS reply_post_id,
+    R.content AS  reply_content,
+    R.reply_time AS reply_reply_time,
+    P2.title AS reply_post_title
+    FROM user U
+      LEFT OUTER JOIN post P1 ON U.id = P1.user_id
+      LEFT OUTER JOIN reply R ON R.user_id = U.id
+      LEFT OUTER JOIN post P2 ON P2.id = R.post_id
+    WHERE U.id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByForLoginByUserName" resultMap="ResultMapForLogin" parameterType="java.lang.String">
+    SELECT id, password,active
+    FROM user
+    WHERE user_name = #{userName,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectForLoginByEmail" resultMap="ResultMapForLogin" parameterType="java.lang.String">
+    SELECT id,password,active
+    FROM user
+    WHERE email = #{email,jdbcType=VARCHAR}
+  </select>
+
+    <select id="selectByEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM user
+        WHERE email = #{email,jdbcType=VARCHAR}
+    </select>
+
+  <select id="selectPasswordByUserName" resultType="java.lang.String" parameterType="java.lang.String">
+    SELECT password
+    FROM user
+    WHERE user_name = #{userName,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectAllUsers" resultMap="BaseResultMap" parameterType="int">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM user
+    LIMIT #{offset,jdbcType=INTEGER},10
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="int" >
+    delete from user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <insert id="insert" parameterType="User" >
+    <selectKey resultType="int" order="AFTER" keyProperty="id">
+      SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into user (user_name, email,password,sex, self_introduce, state,register_time, massage_number,active,validateCode)
+    values (#{userName,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},
+      #{sex,jdbcType=INTEGER}, #{selfIntroduce,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER},
+      #{registerTime,jdbcType=DATE}, #{massageNumber,jdbcType=INTEGER},#{active,jdbcType=INTEGER},#{validateCode,jdbcType=VARCHAR})
+  </insert>
+
+  <insert id="insertSelective" parameterType="User" >
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="sex != null" >
+        sex,
+      </if>
+      <if test="selfIntroduce != null" >
+        self_introduce,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="registerTime != null" >
+        register_time,
+      </if>
+      <if test="massageNumber != null" >
+        massage_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="selfIntroduce != null" >
+        #{selfIntroduce,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="registerTime != null" >
+        #{registerTime,jdbcType=DATE},
+      </if>
+      <if test="massageNumber != null" >
+        #{massageNumber,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="User" >
+    update user
+    <set >
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="password != null" >
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="selfIntroduce != null" >
+        self_introduce = #{selfIntroduce,jdbcType=VARCHAR},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="registerTime != null" >
+        register_time = #{registerTime,jdbcType=DATE},
+      </if>
+      <if test="massageNumber != null" >
+        massage_number = #{massageNumber,jdbcType=INTEGER},
+      </if>
+        <if test="active != null" >
+            active = #{active,jdbcType=INTEGER},
+        </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="User" >
+    update user
+    set user_name = #{userName,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=INTEGER},
+      self_introduce = #{selfIntroduce,jdbcType=VARCHAR},
+      state = #{state,jdbcType=INTEGER},
+      register_time = #{registerTime,jdbcType=DATE},
+      massage_number = #{massageNumber,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

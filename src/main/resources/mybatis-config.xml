@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <typeAliases>
+        <typeAlias alias="User" type="com.shadowxz.domain.User"/>
+        <typeAlias alias="Section" type="com.shadowxz.domain.Section"/>
+        <typeAlias alias="Post" type="com.shadowxz.domain.Post"/>
+        <typeAlias alias="Reply" type="com.shadowxz.domain.Reply"/>
+        <typeAlias alias="Admin" type="com.shadowxz.domain.Admin"/>
+    </typeAliases>
+</configuration>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shadowxz.dao.AdminDao" >
+    <resultMap id="BaseResultMap" type="Admin" >
+        <constructor >
+            <idArg column="id" jdbcType="INTEGER" javaType="int" />
+            <arg column="user_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+            <arg column="password" jdbcType="VARCHAR" javaType="java.lang.String" />
+            <arg column="state" jdbcType="INTEGER" javaType="int" />
+        </constructor>
+    </resultMap>
+    <resultMap id="ResultMapForLogin" type="Admin" >
+        <id property="id" column="id" />
+        <result property="user_name" column="userName" />
+        <result property="password" column="password" />
+    </resultMap>
+    <sql id="Base_Column_List" >
+        id, user_name,state
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+        select
+        <include refid="Base_Column_List" />
+        from admin
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByUserName" resultMap="ResultMapForLogin" parameterType="java.lang.String">
+        SELECT id, password
+        FROM admin
+        WHERE user_name = #{userName,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectPasswordByUserName" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT password
+        FROM admin
+        WHERE user_name = #{userName,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectAllUsers" resultMap="BaseResultMap" parameterType="int">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM user
+        LIMIT #{offset,jdbcType=INTEGER}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="int" >
+        delete from user
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="Admin" >
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into user (user_name, password,state)
+        values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},#{state})
+    </insert>
+
+    <insert id="insertSelective" parameterType="Admin" >
+        insert into user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="userName != null" >
+                user_name,
+            </if>
+            <if test="state != null" >
+                state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null" >
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                #{state,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="Admin" >
+        update user
+        <set >
+            <if test="userName != null" >
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="state != null" >
+                state = #{state,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="Admin" >
+        update user
+        set user_name = #{userName,jdbcType=VARCHAR},
+        password = #{password,jdbcType=VARCHAR},
+        state = #{state,jdbcType=INTEGER}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

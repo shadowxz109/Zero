@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html class="uk-height-1-1">
+<head>
+    <title>登录</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/resources/css/uikit.css" />
+    <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
+    <script src="/resources/js/jquery-3.0.0.min.js"></script>
+    <script src="/resources/js/jquery.md5.js"></script>
+    <script src="/resources/js/uikit.js"></script>
+    <script src="/resources/js/JJ.js"></script>
+    <script>
+        $(function() {
+            function _init() {
+                _checkNull();
+                _submitForm();
+            }
+            function _checkNull(){
+                $('#userName').blur(function () {
+                    var username = $('#userName').val();
+                    if(username == ''){
+                        $('#username-check').removeClass('uk-hidden');
+                    }else {
+                        $('#username-check').addClass('uk-hidden');
+                    }
+                });
+                $('#password').blur(function (){
+                    var password = $('#password').val();
+                    if(password == ''){
+                        $('#password-check').removeClass('uk-hidden');
+                    }else {
+                        $('#password-check').addClass('uk-hidden');
+                    }
+                });
+            }
+            function _submitForm() {
+                $('#signin-btn').click(function () {
+                    var username = $('#userName').val();
+                    var password = $('#password').val();
+                    var remember = $('#remember').val();
+                    var url = '/api/user/session';
+                    password = $.md5(password.toString().trim()).toString();
+                    var data ={
+                        userName: username.toString().trim().toLowerCase(),
+                        password: password,
+                        remember: remember
+                    };
+                    $.post(url,data,function (result) {
+                        if(result.resultCode=="0"){
+                            location.assign('/');
+                        }else{
+                            $('#signin-msg').removeClass('uk-hidden');
+                            $('#signin-msg').html(result.msg);
+                        }
+                    });
+                    return false;
+                });
+            }
+            _init();
+        })
+    </script>
+</head>
+<body class="uk-height-1-1">
+<div class="uk-vertical-align uk-text-center uk-height-1-1" style="background-color: lightblue">
+    <div class="uk-vertical-align-middle" style="width: 360px">
+        <p><a href="/" class="uk-icon-button"><i class="uk-icon-comments"></i></a><a href="/">论坛</a></p>
+        <form id="signin" class="uk-panel uk-panel-box uk-form">
+            <div class="uk-alert uk-alert-danger uk-hidden"></div>
+            <div class="uk-form-row">
+                <div class="uk-form-icon uk-width-1-1">
+                    <i class="uk-icon-envelope-o"></i>
+                    <input id="userName" name="userName" type="text" placeholder="电子邮件" maxlength="50" class="uk-width-1-1 uk-form-middle">
+                </div>
+                <div id= "username-check" class="uk-alert uk-alert-danger uk-hidden">用户名不能为空</div>
+            </div>
+            <div class="uk-form-row">
+                <div class="uk-form-icon uk-width-1-1">
+                    <i class="uk-icon-lock"></i>
+                    <input id="password" name="password" type="password" placeholder="密码" maxlength="50" class="uk-width-1-1 uk-form-middle">
+                </div>
+                <div id= "password-check" class="uk-alert uk-alert-danger uk-hidden">密码不能为空</div>
+                <div id="signin-msg" class="uk-alert uk-alert-danger uk-hidden"></div>
+            </div>
+            <div class="uk-form-row">
+                <button id="signin-btn" class="uk-width-1-3 uk-button uk-button-primary uk-button-middle"><i class="uk-icon-sign-in"></i> 登录</button>
+            </div>
+            <div class="uk-form-row uk-text-small">
+                <label class="uk-float-left"><input id="remember" type="checkbox"> 记住我</label>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+</script>
+</body>
+</html>

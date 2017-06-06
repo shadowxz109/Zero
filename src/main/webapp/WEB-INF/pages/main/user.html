@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>主页</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/resources/css/uikit.css" />
+    <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
+    <link rel="stylesheet" href="/resources/css/components/form-select.css">
+    <script src="/resources/js/jquery-3.0.0.min.js"></script>
+    <script src="/resources/js/md5.js"></script>
+    <script src="/resources/js/json.min.js"></script>
+    <script src="/resources/js/uikit.js"></script>
+    <script src="/resources/js/components/form-select.js"></script>
+    <script src="/resources/js/vue.js"></script>
+    <script src="/resources/js/JJ.js"></script>
+    <script src="/resources/js/js.cookie.js"></script>
+    <!-- HTML 编辑器的 CSS 与 JavaScript -->
+    <link href="/resources/css/hybrid.css" rel="stylesheet"/>
+    <link href="/resources/css/editor.css" rel="stylesheet">
+    <script src="/resources/js/json.min.js"></script>
+    <script src="/resources/js/highlight.pack.js"></script>
+    <script src="/resources/js/editor.js"></script>
+    <script src="/resources/js/marked.js"></script>
+    <script>
+        $(function () {
+            function _initMain(data) {
+                var main = new Vue({
+                    el: "#main",
+                    data:{
+                        user: data.user,
+                        posts: data.user.posts,
+                        replies: data.user.replies
+                    }
+                });
+            }
+
+            function _getUserDetailData() {
+                var url = location.href;
+                var index = url.lastIndexOf("/");
+                var userId = url.substring(index);
+                url = "/api/user/"+userId;
+                $.get(url,function (result) {
+                    if(result.resultCode == "0"){
+                        _initMain(result);
+                        console.log(result);
+                    }
+                })
+            }
+
+            /*function _initEvent() {
+                $('#post-btn').click(function () {
+                    _postNewPost();
+                });
+                var title = $('#title');
+                title.blur(function () {
+                    if(title.val() == ""){
+                        $('#title-check').removeClass('uk-hidden');
+                    }else {
+                        $('#title-check').addClass('uk-hidden');
+                    }
+                })
+            }*/
+            _getUserDetailData();
+            //_initEvent();
+            _getUserData();
+            _getNewPosts()
+        })
+    </script>
+</head>
+<body >
+<div  class="uk-height-1-1 uk-grid">
+    <div id="header" class="uk-block uk-block-secondary uk-width-1-1 uk-margin-bottom uk-padding-remove">
+        <div class="uk-width-large-2-3 uk-container-center">
+            <div class="uk-float-right uk-hidden-small">
+                <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signup">注册</a>
+                <a class="uk-link-muted uk-contrast " v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a>
+                <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signin">登录</a>
+                <a onclick="_loginout()" class="uk-link-muted uk-contrast " v-else >登出</a>
+            </div>
+            <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
+            <div id="bianbian" class="uk-offcanvas">
+                <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">注册</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="/">登录</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">我的</a></div>
+                </div>
+            </div>
+            <h2 class="uk-contrast"><a href="/">Zero</a></h2>
+        </div>
+    </div>
+    <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
+        <div id="main" class="uk-width-large-4-5 uk-width-small-1-1">
+            <div class="uk-block uk-padding-top-remove">
+                <div class="uk-panel uk-panel-box uk-panel-divider uk-panel-header ">
+                    <div class="uk-comment uk-comment-primary">
+                        <header class="uk-comment-header">
+                            <div class="uk-border-circle uk-comment-avatar" style="width: 50px;height: 50px;overflow: hidden;">
+                                <img src="/resources/img/3.jpg">
+                            </div>
+                            <h3 class="uk-comment-title">{{user.userName}}</h3>
+                            <h5>{{user.selfIntroduce}}</h5>
+                        </header>
+                    </div>
+                    <div class="uk-panel uk-panel-box">
+                        <article>加入时间:{{user.registerTime}}
+                        </article>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-block uk-padding-top-remove">
+                <div class="uk-panel uk-panel-box uk-panel-header">
+                    <h6 class="uk-panel-title">{{user.userName}}发表的帖子</h6>
+                    <ul id="posts" class="uk-comment-list">
+                        <li v-for="post in posts">
+                            <article class="uk-comment">
+                                <header class="uk-comment-header">
+                                    <h4 class="uk-comment-title"><a v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a></h4>
+                                    <div class="uk-comment-meta">发表时间：{{post.pulishTime}}<a v-bind:data-key="post.id" style="float: right"> 删除</a></div>
+                                </header>
+                            </article>
+                            <hr/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="uk-block uk-padding-top-remove">
+                <div class="uk-panel uk-panel-box uk-panel-header">
+                    <h6 class="uk-panel-title">{{user.userName}}的回复</h6>
+                    <ul id="replies" class="uk-comment-list">
+                        <li v-for="reply in replies">
+                            <article class="uk-comment">
+                                <header class="uk-comment-header">
+                                    <h4 class="uk-comment-title">在<a v-bind:href="'/post/'+reply.postId+'/replies/page/1'">{{reply.post.title}}</a>下的回复</h4>
+                                    <div class="uk-comment-meta">{{reply.replyTime}}</div>
+                                </header>
+                                <div class="uk-comment-body">{{reply.content}}<a v-bind:data-key="reply.id" style="float: right">删除</a></div>
+                            </article>
+                            <hr/>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- 侧边栏-->
+        <div class="uk-hidden-small" style="margin-left: 5%;">
+            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column">
+                <h3 v-if="user != null" class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
+                <h3 v-else class="uk-panel-title">请先登录</h3>
+                <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
+            </div>
+            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column" style="margin-top: 20%">
+                <div id="newPosts">
+                    <h3 class="uk-panel-title">最新帖子</h3>
+                    <div v-for="post in newPosts">
+                        <a  v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shadowxz.dao.SectionDao" >
+  <resultMap id="BaseResultMap" type="Section" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="int" />
+      <arg column="section_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="introduce" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="post_number" jdbcType="INTEGER" javaType="int" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, section_name, introduce, post_number
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM section
+    WHERE id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectAllSection" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM section
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="int" >
+    delete from section
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="Section" >
+    <selectKey resultType="int" order="AFTER" keyProperty="id">
+      SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into section (section_name, introduce,
+      post_number)
+    values (#{sectionName,jdbcType=VARCHAR}, #{introduce,jdbcType=VARCHAR},
+      #{postNumber,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="Section" >
+    insert into section
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="sectionName != null" >
+        section_name,
+      </if>
+      <if test="introduce != null" >
+        introduce,
+      </if>
+      <if test="postNumber != null" >
+        post_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="sectionName != null" >
+        #{sectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="introduce != null" >
+        #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="postNumber != null" >
+        #{postNumber,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="Section" >
+    update section
+    <set >
+      <if test="sectionName != null" >
+        section_name = #{sectionName,jdbcType=VARCHAR},
+      </if>
+      <if test="introduce != null" >
+        introduce = #{introduce,jdbcType=VARCHAR},
+      </if>
+      <if test="postNumber != null" >
+        post_number = #{postNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="Section" >
+    update section
+    set section_name = #{sectionName,jdbcType=VARCHAR},
+      introduce = #{introduce,jdbcType=VARCHAR},
+      post_number = #{postNumber,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

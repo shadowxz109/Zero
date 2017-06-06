@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<head>
+	<title>主页</title>
+	<meta charset="utf-8">
+    <link rel="stylesheet" href="/resources/css/uikit.css" />
+    <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
+    <script src="/resources/js/jquery-3.0.0.min.js"></script>
+    <script src="/resources/js/md5.js"></script>
+    <script src="/resources/js/json.min.js"></script>
+    <script src="/resources/js/uikit.js"></script>
+	<script src="/resources/js/vue.js"></script>
+    <script src="/resources/js/JJ.js"></script>
+    <script src="/resources/js/js.cookie.js"></script>
+    <!-- HTML 编辑器的 CSS 与 JavaScript -->
+    <style type="text/css">
+    </style>
+    <script type="text/javascript">
+        function _initMain(data){
+            var main = new Vue({
+                el:'#main',
+                data:{
+                    posts: data.posts,
+                    sections: data.sections
+                }
+            });
+        }
+        function _getData() {
+            var url = location.href;
+            var index = url.indexOf('8080');
+            url = url.substring(index);
+            index = url.indexOf('/');
+            url = url.substring(index);
+            url = "/api"+ url;
+            if(url == "/api/"){
+                url = "/api/section/1/posts/page/1";
+            }
+            $.get(url,function(data){
+               _initMain(data);
+            });
+        }
+        $(function(){
+            _getData();
+            _getUserData();
+            _getNewPosts();
+        });
+    </script>
+</head>
+<body >
+<div  class="uk-height-1-1 uk-grid">
+    <div id="header" class="uk-block uk-block-secondary uk-width-1-1 uk-margin-bottom uk-padding-remove">
+        <div class="uk-width-large-2-3 uk-container-center">
+            <div class="uk-float-right uk-hidden-small">
+                <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signup">注册</a>
+                <a class="uk-link-muted uk-contrast " v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a>
+                <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signin">登录</a>
+                <a onclick="_loginout()" class="uk-link-muted uk-contrast " v-else >登出</a>
+            </div>
+            <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
+            <div id="bianbian" class="uk-offcanvas">
+                <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">注册</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="/">登录</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">我的</a></div>
+                </div>
+            </div>
+            <h2 class="uk-contrast"><a href="/">Zero</a></h2>
+        </div>
+    </div>
+    <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
+        <div id="main" class="uk-width-large-4-5 uk-width-small-1-1">
+            <ul id ="sections" class="uk-subnav">
+                <div v-for="section in sections"><a v-bind:href="'/section/'+section.id+'/posts/page/1'">{{section.sectionName}}</a></div>
+            </ul>
+            <div id="posts">
+                <div v-for="post in posts" style="margin-top: 3%">
+                    <div class="uk-panel uk-panel-box uk-panel-divider uk-panel-header ">
+                        <div style="float: right;">
+                            浏览：<div class=" uk-badge uk-badge-notification">{{post.readNumber}}</div>
+                            回复：<div class=" uk-badge uk-badge-notification">{{post.replyNumber}}</div>
+                        </div>
+		                <div class="uk-panel-title"><a v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a></div>
+		                <div style="float: right; font-size: small">发表：{{post.pulishTime}} 回复：{{post.replyTime}}</div>
+                    </div>
+                </div>
+            </div>
+		    <ul class="uk-pagination">
+                <li><a href="">1</a></li>
+                <li class="uk-active"><span>2</span></li>
+                <li class="uk-disabled"><span>3</span></li>
+                <li><span>4</span></li>
+            </ul>
+        </div>
+        <!-- 侧边栏-->
+        <div class="uk-hidden-small" style="margin-left: 5%;">
+            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column">
+                <div v-if="user != null">
+                    <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
+                    <h5>{{user.selfIntroduce}}</h5>
+                </div>
+                <h3 v-else class="uk-panel-title">请先登录</h3>
+                <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
+            </div>
+            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column" style="margin-top: 20%">
+                <div id="newPosts">
+                    <h3 class="uk-panel-title">最新帖子</h3>
+                    <div v-for="post in newPosts">
+                        <a  v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

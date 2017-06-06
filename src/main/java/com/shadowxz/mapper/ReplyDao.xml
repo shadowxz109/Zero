@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.shadowxz.dao.ReplyDao" >
+  <resultMap id="ResultMapWithBLOBs" type="Reply" >
+    <constructor >
+      <idArg column="id" jdbcType="INTEGER" javaType="int" />
+      <arg column="post_id" jdbcType="INTEGER" javaType="int" />
+      <arg column="user_id" jdbcType="INTEGER" javaType="int" />
+      <arg column="reply_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="state" jdbcType="INTEGER" javaType="int" />
+      <arg column="content" jdbcType="LONGVARCHAR" javaType="java.lang.String" />
+    </constructor >
+  </resultMap>
+  <resultMap id="ReplyWithUser" type="Reply">
+    <id property="id" column="id" />
+    <result property="postId" column="post_id" />
+    <result property="userId" column="user_id" />
+    <result property="replyTime" column="reply_time" />
+    <result property="state" column="state" />
+    <result property="content" column="content" />
+    <association property="replyUser" javaType="User">
+      <result property="userName" column="user_name" />
+    </association>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    post_id, user_id, reply_time
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="int" >
+    select R.id AS id,R.state as state,
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from reply R
+      LEFT OUTER JOIN user U ON R.user_id = U.id
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAllReplies" resultMap="ResultMapWithBLOBs" parameterType="int" >
+    select R.id AS id, R.state as state,
+      <include refid="Base_Column_List" />
+      ,
+      <include refid="Blob_Column_List" />
+    from reply R
+    LEFT OUTER JOIN user U ON R.user_id = U.id
+    ORDER BY R.id DESC
+    LIMIT #{offset,jdbcType=INTEGER},10
+  </select>
+
+  <select id="selectRepliesByPostId" resultMap="ResultMapWithBLOBs" parameterType="java.util.Map" >
+      select R.id AS id,R.state as state,
+      <include refid="Base_Column_List" />
+      ,
+      <include refid="Blob_Column_List" />
+      from reply R
+      LEFT OUTER JOIN user U ON R.user_id = U.id
+    WHERE post_id = #{postId,jdbcType=INTEGER}
+    LIMIT #{offset,jdbcType=INTEGER},10
+  </select>
+
+  <select id="selectRepliesByUserId" resultMap="ResultMapWithBLOBs" parameterType="java.util.Map" >
+      select R.id AS id,R.state as state,
+      <include refid="Base_Column_List" />
+      ,
+      <include refid="Blob_Column_List" />
+      from reply R
+      LEFT OUTER JOIN user U ON R.user_id = U.id
+    WHERE user_id = #{userId,jdbcType=INTEGER}
+    LIMIT #{offset,jdbcType=INTEGER},10
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="int" >
+    delete from reply
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="Reply" >
+    <selectKey resultType="int" order="AFTER" keyProperty="id">
+      SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into reply (post_id, user_id,
+      reply_time, state, content
+      )
+    values (#{postId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER},
+      #{replyTime,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER}, #{content,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="Reply" >
+    insert into reply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="postId != null" >
+        post_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="replyTime != null" >
+        reply_time,
+      </if>
+      <if test="state != null" >
+        state,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="postId != null" >
+        #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="replyTime != null" >
+        #{replyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        #{state,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="Reply" >
+    update reply
+    <set >
+      <if test="postId != null" >
+        post_id = #{postId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="replyTime != null" >
+        reply_time = #{replyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null" >
+        state = #{state,jdbcType=INTEGER},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="Reply" >
+    update reply
+    set post_id = #{postId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      reply_time = #{replyTime,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=INTEGER},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="Reply" >
+    update reply
+    set post_id = #{postId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      reply_time = #{replyTime,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
