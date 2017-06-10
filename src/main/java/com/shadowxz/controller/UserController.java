@@ -38,7 +38,7 @@ public class UserController {
     @Autowired
     ReplyService replyService;
 
-    @RequestMapping(value = "/user",method = {RequestMethod.POST,RequestMethod.GET})
+    @RequestMapping(value = "/user",method = {RequestMethod.POST})
     public @ResponseBody Map<String,Object> postRegisterUser(HttpServletRequest request){
         String action = request.getParameter("action");
         Map<String,Object> result = new HashMap<>();

@@ -1,5 +1,7 @@
 package com.shadowxz.controller;
 
+import com.shadowxz.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +14,9 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Controller
 public class ViewController {
+
+    @Autowired
+    UserService userService;
 
     @RequestMapping(value = "/",method = RequestMethod.GET)
     public ModelAndView getIndex(){
@@ -35,7 +40,8 @@ public class ViewController {
     }
     
     @RequestMapping(value = "/post/new",method = RequestMethod.GET)
-    public ModelAndView getNewPost(){return new ModelAndView("main/new"); }
+    public ModelAndView getNewPost(){
+        return new ModelAndView("main/new"); }
 
     @RequestMapping(value = "/post/{postId}/replies/page/{page}",method = RequestMethod.GET)
     public ModelAndView getPost(){
@@ -50,5 +56,10 @@ public class ViewController {
     @RequestMapping(value = "/user/{userId}",method = RequestMethod.GET)
     public ModelAndView getUserInfo(){
         return new ModelAndView("main/user");
+    }
+
+    @RequestMapping(value = "/user",method = RequestMethod.GET)
+    public ModelAndView activeUser(HttpServletRequest request){
+        return new ModelAndView("main/active");
     }
 }
