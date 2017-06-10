@@ -14,13 +14,6 @@
     <script src="/resources/js/vue.js"></script>
     <script src="/resources/js/JJ.js"></script>
     <script src="/resources/js/js.cookie.js"></script>
-    <!-- HTML 编辑器的 CSS 与 JavaScript -->
-    <link href="/resources/css/hybrid.css" rel="stylesheet"/>
-    <link href="/resources/css/editor.css" rel="stylesheet">
-    <script src="/resources/js/json.min.js"></script>
-    <script src="/resources/js/highlight.pack.js"></script>
-    <script src="/resources/js/editor.js"></script>
-    <script src="/resources/js/marked.js"></script>
     <script>
         $(function () {
             function _initMain(data) {
@@ -35,36 +28,34 @@
             }
 
             function _getUserDetailData() {
-                var url = location.href;
-                var index = url.lastIndexOf("/");
-                var userId = url.substring(index);
-                url = "/api/user/"+userId;
+                var url = location.pathname;
+                url = "/api"+url;
                 $.get(url,function (result) {
                     if(result.resultCode == "0"){
                         _initMain(result);
-                        console.log(result);
                     }
                 })
             }
 
-            /*function _initEvent() {
-                $('#post-btn').click(function () {
-                    _postNewPost();
-                });
-                var title = $('#title');
-                title.blur(function () {
-                    if(title.val() == ""){
-                        $('#title-check').removeClass('uk-hidden');
-                    }else {
-                        $('#title-check').addClass('uk-hidden');
-                    }
-                })
-            }*/
             _getUserDetailData();
-            //_initEvent();
-            _getUserData();
+            _initEvent();
+            _getUserData(false,true);
             _getNewPosts()
-        })
+        });
+
+        function _initEvent() {
+            $('#delete-post').click(function () {
+
+            });
+        }
+
+        function _checkUser(data) {
+            if(data.user != null ){
+                if(user.id != data.user.id){
+                    $("#delete-post").addClass("uk-hidden");
+                }else {$("#delete-post").removeClass("uk-hidden");}
+            }else {$("#delete-post").addClass("uk-hidden");}
+        }
     </script>
 </head>
 <body >
@@ -115,7 +106,7 @@
                             <article class="uk-comment">
                                 <header class="uk-comment-header">
                                     <h4 class="uk-comment-title"><a v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a></h4>
-                                    <div class="uk-comment-meta">发表时间：{{post.pulishTime}}<a v-bind:data-key="post.id" style="float: right"> 删除</a></div>
+                                    <div class="uk-comment-meta">发表时间：{{post.pulishTime}}<a id="delete-post" class="uk-hidden" v-bind:data-key="post.id" style="float: right">删除</a></div>
                                 </header>
                             </article>
                             <hr/>
@@ -133,7 +124,7 @@
                                     <h4 class="uk-comment-title">在<a v-bind:href="'/post/'+reply.postId+'/replies/page/1'">{{reply.post.title}}</a>下的回复</h4>
                                     <div class="uk-comment-meta">{{reply.replyTime}}</div>
                                 </header>
-                                <div class="uk-comment-body">{{reply.content}}<a v-bind:data-key="reply.id" style="float: right">删除</a></div>
+                                <div class="uk-comment-body">{{reply.content}}<a id="delete-repli" class="uk-hidden" v-bind:data-key="reply.id" style="float: right">删除</a></div>
                             </article>
                             <hr/>
                         </li>
@@ -142,13 +133,16 @@
             </div>
         </div>
         <!-- 侧边栏-->
-        <div class="uk-hidden-small" style="margin-left: 5%;">
-            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column">
-                <h3 v-if="user != null" class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
+        <div class="uk-hidden-small uk-width-1-4" style="margin-left: 5%;">
+            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header ">
+                <div v-if="user != null">
+                    <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
+                    <h5>{{user.selfIntroduce}}</h5>
+                </div>
                 <h3 v-else class="uk-panel-title">请先登录</h3>
                 <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
             </div>
-            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column" style="margin-top: 20%">
+            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header" style="margin-top: 20%">
                 <div id="newPosts">
                     <h3 class="uk-panel-title">最新帖子</h3>
                     <div v-for="post in newPosts">

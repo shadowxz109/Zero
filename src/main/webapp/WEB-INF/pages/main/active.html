@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>帐号激活</title>
+    <link rel="stylesheet" href="/resources/css/uikit.css" />
+    <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
+    <link rel="stylesheet" href="/resources/css/components/form-select.css">
+    <script src="/resources/js/jquery-3.0.0.min.js"></script>
+    <script src="/resources/js/md5.js"></script>
+    <script src="/resources/js/json.min.js"></script>
+    <script src="/resources/js/uikit.js"></script>
+    <script src="/resources/js/components/form-select.js"></script>
+    <script src="/resources/js/vue.js"></script>
+    <script src="/resources/js/JJ.js"></script>
+    <script src="/resources/js/js.cookie.js"></script>
+    <script>
+        $(function () {
+            function _getQueryString(name) {
+                var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                if(r!=null)
+                    return decodeURI(r[2]);
+                return null;
+            }
+
+            function _initMain(data) {
+                var main = new Vue({
+                    el: "#main",
+                    data:{
+                        msg:data.msg
+                    }
+                });
+            }
+
+            function _getData() {
+                var action = _getQueryString("action");
+                var email = _getQueryString("email");
+                var validateCode = _getQueryString("validateCode");
+                console.log("action:"+action);
+                var data = {
+                    action: action,
+                    email: email,
+                    validateCode : validateCode
+                };
+                $.post("/api/user/user",data,function (result) {
+                    if(result.resultCode == "0"){
+                        _initMain(result);
+                        setTimeout("location.href = 'user/signin'",3000);
+                    }else{
+                        _initMain(result);
+                    }
+                })
+            }
+            _getData();
+        })
+    </script>
+</head>
+<body>
+<div  class="uk-height-1-1 uk-grid">
+    <div class="uk-block uk-block-secondary uk-width-1-1 uk-margin-bottom uk-padding-remove">
+        <div class="uk-width-large-2-3 uk-container-center">
+            <div class="uk-float-right uk-hidden-small">
+                <a class="uk-link-muted uk-contrast " href="/user/signup">注册</a>
+                <a class="uk-link-muted uk-contrast " href="/user/signin">登录</a>
+            </div>
+            <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
+            <div id="bianbian" class="uk-offcanvas">
+                <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">注册</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="/">登录</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">我的</a></div>
+                </div>
+            </div>
+            <h2 class="uk-contrast"><a href="/">Zero</a></h2>
+        </div>
+    </div>
+    <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
+        <div id="main" class="uk-width-large-4-5 uk-width-small-1-1">
+            <div class="uk-block uk-padding-top-remove">
+                <div class="uk-panel uk-panel-box uk-panel-divider uk-panel-header ">
+                    <div class="uk-comment uk-comment-primary">
+                        <h2>{{msg}}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

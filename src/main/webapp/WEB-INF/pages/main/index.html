@@ -5,16 +5,32 @@
     <link rel="stylesheet" href="/resources/css/uikit.css" />
     <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
     <script src="/resources/js/jquery-3.0.0.min.js"></script>
+    <script src="/resources/js/components/pagination.js"></script>
     <script src="/resources/js/md5.js"></script>
     <script src="/resources/js/json.min.js"></script>
     <script src="/resources/js/uikit.js"></script>
 	<script src="/resources/js/vue.js"></script>
     <script src="/resources/js/JJ.js"></script>
     <script src="/resources/js/js.cookie.js"></script>
-    <!-- HTML 编辑器的 CSS 与 JavaScript -->
-    <style type="text/css">
-    </style>
+    <script src="/resources/js/jquery.pagination.js"></script>
     <script type="text/javascript">
+        function _initPagination(page){
+            var url = location.pathname;
+            if(url == "/"){
+                url = "/section/1/posts/page/1";
+            }
+            $('#M-box2').pagination({
+                current:page,
+                pageCount: 10,
+                callback:function(api){
+                    var page =  api.getCurrent();
+                    var index = url.lastIndexOf("/");
+                    url = url.substring(0,index+1);
+                    url  =  "http://" +location.host + url + page;
+                    location.assign(url)
+                }
+            });
+        }
         function _initMain(data){
             var main = new Vue({
                 el:'#main',
@@ -24,16 +40,18 @@
                 }
             });
         }
+
         function _getData() {
-            var url = location.href;
-            var index = url.indexOf('8080');
-            url = url.substring(index);
-            index = url.indexOf('/');
-            url = url.substring(index);
-            url = "/api"+ url;
-            if(url == "/api/"){
+            var url = location.pathname;
+            if(url == "/"){
                 url = "/api/section/1/posts/page/1";
+            }else{
+                url = "/api" + url;
             }
+            var index = url.lastIndexOf("/");
+            var pagestr = url.substring(index+1);
+            var page = parseInt(pagestr);
+            _initPagination(page,url);
             $.get(url,function(data){
                _initMain(data);
             });
@@ -45,7 +63,7 @@
         });
     </script>
 </head>
-<body >
+<body>
 <div  class="uk-height-1-1 uk-grid">
     <div id="header" class="uk-block uk-block-secondary uk-width-1-1 uk-margin-bottom uk-padding-remove">
         <div class="uk-width-large-2-3 uk-container-center">
@@ -67,7 +85,8 @@
         </div>
     </div>
     <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
-        <div id="main" class="uk-width-large-4-5 uk-width-small-1-1">
+        <div  class="uk-width-large-4-5 uk-width-small-1-1">
+            <div id="main">
             <ul id ="sections" class="uk-subnav">
                 <div v-for="section in sections"><a v-bind:href="'/section/'+section.id+'/posts/page/1'">{{section.sectionName}}</a></div>
             </ul>
@@ -83,16 +102,12 @@
                     </div>
                 </div>
             </div>
-		    <ul class="uk-pagination">
-                <li><a href="">1</a></li>
-                <li class="uk-active"><span>2</span></li>
-                <li class="uk-disabled"><span>3</span></li>
-                <li><span>4</span></li>
-            </ul>
+            </div>
+            <ul id="M-box2" class="uk-pagination"></ul>
         </div>
         <!-- 侧边栏-->
-        <div class="uk-hidden-small" style="margin-left: 5%;">
-            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column">
+        <div class="uk-hidden-small uk-width-1-4" style="margin-left: 5%;">
+            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header ">
                 <div v-if="user != null">
                     <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
                     <h5>{{user.selfIntroduce}}</h5>
@@ -100,7 +115,7 @@
                 <h3 v-else class="uk-panel-title">请先登录</h3>
                 <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
             </div>
-            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column" style="margin-top: 20%">
+            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header " style="margin-top: 20%">
                 <div id="newPosts">
                     <h3 class="uk-panel-title">最新帖子</h3>
                     <div v-for="post in newPosts">

@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="/resources/css/uikit.css" />
 	<link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
 	<script src="/resources/js/jquery-3.0.0.min.js"></script>
+	<script src="/resources/js/components/pagination.js"></script>
 	<script src="/resources/js/jquery.md5.js"></script>
 	<script src="/resources/js/json.min.js"></script>
 	<script src="/resources/js/uikit.js"></script>
@@ -14,14 +15,21 @@
     <script src="/resources/js/js.cookie.js"></script>
 	<script>
         function getUrl() {
-            var url = location.href;
-            var index = url.indexOf('8080');
-            url = url.substring(index);
-            index = url.indexOf('/');
-            url = url.substring(index);
+            var url = location.pathname;
             url = '/api'+ url;
             return url;
         }
+		function _initPagination(page){
+			$('#M-box2').pagination({
+				current: page,
+				pageCount: 10,
+				callback:function(api){
+					var page =  api.getCurrent();
+					var url  =  "http://" +location.host + '/section/1/posts/page/' + page;
+					location.assign(url)
+				}
+			});
+		}
 		function _init(data) {
 			var main = new Vue({
 				el: '#main',
@@ -91,7 +99,7 @@
 					  			<img src="/resources/img/3.jpg">
 							</div>
 					    	<h4 class="uk-comment-title">{{post.title}}</h4>
-							<div class="uk-comment-meta"><a v-bind:href="'http://localhost:8080/user/'+post.userId">{{post_user.userName}}</a>|{{post.pulishTime}}| 哈哈哈 | #</div>
+							<div class="uk-comment-meta"><a v-bind:href="'http://localhost:8080/user/'+post.userId">{{post_user.userName}}</a>|{{post.pulishTime}}</div>
 			  	    	</header>
 			        </div>
 			    	<div class="uk-panel uk-panel-box">
@@ -110,7 +118,7 @@
 						        	<div class="uk-border-circle uk-comment-avatar" style="width: 50px;height: 50px;overflow: hidden;">
 						            	<img class="" src="/resources/img/1.jpg" alt="">
 						        	</div>
-						        	<h4 class="uk-comment-title">{{reply.user.userName}}</h4>
+						        	<h4 class="uk-comment-title"><a v-bind:href="'/user/'+reply.userId">{{reply.user.userName}}</a></h4>
 						        	<div class="uk-comment-meta">{{reply.replyTime}}</div>
 						    	</header>
 						    	<div class="uk-comment-body">{{reply.content}}</div>
@@ -118,6 +126,7 @@
 							<hr/>
 						</li>
 					</ul>
+					<ul id="M-box2" class="uk-pagination"></ul>
 				</div>
 			</div>
 			<div id="blog-comment-box" class="uk-block uk-padding-top-remove">
@@ -132,8 +141,8 @@
 			</div>
 		</div>
         <!-- 侧边栏-->
-        <div class="uk-hidden-small" style="margin-left: 5%;">
-			<div id="userInfo" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column">
+        <div class="uk-hidden-small uk-width-1-4" style="margin-left: 5%;">
+			<div id="userInfo" class="uk-panel uk-panel-box uk-panel-header ">
                 <div v-if="user != null">
                     <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
 					<h5>{{user.selfIntroduce}}</h5>
@@ -141,7 +150,7 @@
 				<h3 v-else class="uk-panel-title">请先登录</h3>
 				<button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
 			</div>
-			<div id="newpost" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column" style="margin-top: 20%">
+			<div id="newpost" class="uk-panel uk-panel-box uk-panel-header " style="margin-top: 20%">
 				<div id="newPosts">
 					<h3 class="uk-panel-title">最新帖子</h3>
 					<div v-for="post in newPosts">

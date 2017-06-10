@@ -27,6 +27,7 @@
 
             function _postNewPost() {
                 var sectionId = $('#sections option:selected').val();
+                alert(sectionId);
                 var title = $('#title').val();
                 var content = editor.codemirror.getValue();
                 var data = {
@@ -42,7 +43,7 @@
                     }
                 })
             }
-            
+
             function _initEvent() {
                 $('#post-btn').click(function () {
                     _postNewPost();
@@ -57,21 +58,28 @@
                 })
             }
 
-            function _getSectionsData() {
-                var url = '/api/section/sections';
-                $.get(url,function (data) {
-                    var sections = $('#sections');
-                    for(var i in data.sections){
-                        sections.append("<option value="+data.sections[i].id+">"+data.sections[i].sectionName+"</option>");
-                    }
-                })
-            }
-            _postNewPost();
             _initEvent();
             _getSectionsData();
-            _getUserData();
-            _getNewPosts()
-        })
+            _getNewPosts();
+            _getUserData(true);
+        });
+
+        function _getSectionsData() {
+            var url = '/api/section/sections';
+            $.get(url,function (data) {
+                var sections = $('#sections');
+                for(var i in data.sections){
+                    sections.append("<option value="+data.sections[i].id+">"+data.sections[i].sectionName+"</option>");
+                }
+            })
+        }
+        function _checkSignin(data) {
+            if(data.user == null){
+                $('#user-check').removeClass("uk-hidden");
+            }else{
+                $('#user-check').addClass("uk-hidden");
+            }
+        }
     </script>
 </head>
 <body >
@@ -98,12 +106,14 @@
     <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
         <div class="uk-width-large-4-5 uk-width-small-1-1">
             <div class="uk-padding-top-remove ">
+                <div id= "user-check" class="uk-alert uk-alert-danger uk-hidden"><h3>请先登录</h3></div>
                 <div class="uk-margin">
                     <div class="uk-button uk-form-select uk-width-1-5" data-uk-form-select>
                         <span>选择板块</span>
                         <i class="uk-icon-caret-down"></i>
                         <select id="sections">
                         </select>
+                        <div id= "section-check" class="uk-alert uk-alert-danger uk-hidden">标题不能为空</div>
                     </div>
                     <form class="uk-form" style="float: right">
                         <div><input id="title" placeholder="标题" class="uk-form-width-large"></div>
@@ -122,8 +132,8 @@
             </div>
         </div>
         <!-- 侧边栏-->
-        <div class="uk-hidden-small" style="margin-left: 5%;">
-            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column">
+        <div class="uk-hidden-small uk-width-1-4" style="margin-left: 5%;">
+            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header ">
                 <div v-if="user != null">
                     <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
                     <h5>{{user.selfIntroduce}}</h5>
@@ -131,7 +141,7 @@
                 <h3 v-else class="uk-panel-title">请先登录</h3>
                 <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
             </div>
-            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header uk-flex uk-flex-column" style="margin-top: 20%">
+            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header " style="margin-top: 20%">
                 <div id="newPosts">
                     <h3 class="uk-panel-title">最新帖子</h3>
                     <div v-for="post in newPosts">
