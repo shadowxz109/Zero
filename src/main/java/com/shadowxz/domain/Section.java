@@ -3,13 +3,13 @@ package com.shadowxz.domain;
 import java.util.List;
 
 public class Section {
-    private int id;
+    private Integer id;
 
     private String sectionName;
 
     private String introduce;
 
-    private int postNumber;
+    private Integer postNumber;
 
     private List<Post> posts;
 
@@ -30,11 +30,11 @@ public class Section {
         super();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -54,11 +54,11 @@ public class Section {
         this.introduce = introduce == null ? null : introduce.trim();
     }
 
-    public int getPostNumber() {
+    public Integer getPostNumber() {
         return postNumber;
     }
 
-    public void setPostNumber(int postNumber) {
+    public void setPostNumber(Integer postNumber) {
         this.postNumber = postNumber;
     }
 

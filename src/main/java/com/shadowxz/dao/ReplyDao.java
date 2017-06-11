@@ -27,4 +27,6 @@ public interface ReplyDao {
     List<Reply> selectRepliesByUserId(Map<String,Object> map);
 
     List<Reply> selectAllRepies(int offset);
+
+    void deleteRepliesByPostId(int postId);
 }

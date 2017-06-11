@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>发现了一个令我震惊的前端面试绝杀题--移动端浏览器兼容</title>
+	<title>帖子信息</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="/resources/css/uikit.css" />
 	<link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
@@ -13,24 +13,30 @@
     <script src="/resources/js/vue.js"></script>
 	<script src="/resources/js/JJ.js"></script>
     <script src="/resources/js/js.cookie.js"></script>
+	<script src="/resources/js/jquery.pagination.js"></script>
 	<script>
         function getUrl() {
             var url = location.pathname;
             url = '/api'+ url;
             return url;
         }
-		function _initPagination(page){
+		function _initPagination(){
+			var url = location.pathname;
+			var index = url.lastIndexOf("/");
+			var pagestr = url.substring(index+1);
+			url = url.substring(0,index+1);
+			var page = parseInt(pagestr);
 			$('#M-box2').pagination({
 				current: page,
 				pageCount: 10,
 				callback:function(api){
 					var page =  api.getCurrent();
-					var url  =  "http://" +location.host + '/section/1/posts/page/' + page;
+					url  =  "http://" +location.host + url + page;
 					location.assign(url)
 				}
 			});
 		}
-		function _init(data) {
+		function _initMain(data) {
 			var main = new Vue({
 				el: '#main',
 				data: {
@@ -50,15 +56,18 @@
                     if(result.resultCode=="0") {
                         _getData();
                         location.reload();
-                    }else {
-                        alert(result.msg);
-                    }
-                })
+                    }else if(result.resultCode=="1"){
+						alert(result.msg);
+						location.assign('/user/signin');
+                    }else alert(result.msg);
+            });
         }
+
 		function _getData() {
 			var url = getUrl();
+			_initPagination();
 			$.get(url,function (data) {
-				_init(data);
+				_initMain(data);
 			});
 		}
 		$(function () {
@@ -90,8 +99,9 @@
         </div>
     </div>
     <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
-		<div id="main" class="uk-width-large-4-5 uk-width-small-1-1">
-		    <div class="uk-block uk-padding-top-remove">
+		<div class="uk-width-large-4-5 uk-width-small-1-1">
+			<div id="main">
+			<div class="uk-block uk-padding-top-remove">
 			    <div class="uk-panel uk-panel-box uk-panel-divider uk-panel-header ">
 			        <div class="uk-comment uk-comment-primary">
 			  	    	<header class="uk-comment-header">
@@ -108,7 +118,7 @@
 			  		</div>
 			  	</div>
 			</div>
-			<div class="uk-block uk-padding-top-remove">
+			<div class="uk-padding-top-remove">
 				<div class="uk-panel uk-panel-box uk-panel-header">
 			    	<h6 class="uk-panel-title">{{post.replyNumber}}回复</h6>
 					<ul id="replies" class="uk-comment-list">
@@ -126,29 +136,34 @@
 							<hr/>
 						</li>
 					</ul>
-					<ul id="M-box2" class="uk-pagination"></ul>
 				</div>
 			</div>
-			<div id="blog-comment-box" class="uk-block uk-padding-top-remove">
+			</div>
+			<ul id="M-box2" class="uk-pagination"></ul>
+			<div id="comment-box" class="uk-block uk-padding-top-remove">
 				<div class="uk-panel uk-panel-box uk-panel-header">
-                    <h5>发表回复:</h5>
-                    <div class="uk-form-rows">
-                        <textarea  id="new-reply" rows="5" style="width: 100%;overflow: auto;  word-break: break-all; "></textarea>
-                        <button id="new-reply-btn" onclick="_postNewReply()" class="uk-button uk-button-primary uk-button-middle">回复</button>
-                    </div>
-				<hr>
+					<h5>发表回复:</h5>
+					<div class="uk-form-rows">
+						<textarea  id="new-reply" rows="5" style="width: 100%;overflow: auto;  word-break: break-all; "></textarea>
+						<button id="new-reply-btn" onclick="_postNewReply()" class="uk-button uk-button-primary uk-button-middle">回复</button>
+					</div>
 				</div>
 			</div>
 		</div>
         <!-- 侧边栏-->
         <div class="uk-hidden-small uk-width-1-4" style="margin-left: 5%;">
 			<div id="userInfo" class="uk-panel uk-panel-box uk-panel-header ">
-                <div v-if="user != null">
-                    <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
+				<div v-if="user != null">
+					<h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
 					<h5>{{user.selfIntroduce}}</h5>
-                </div>
-				<h3 v-else class="uk-panel-title">请先登录</h3>
-				<button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
+					<button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
+				</div>
+				<div v-else>
+					<h3 class="uk-panel-title"><a href="/user/signup">现在注册</a></h3>
+					<div>
+						已有账号请<button class="uk-button" ><a href="/user/signin">登录</a></button>
+					</div>
+				</div>
 			</div>
 			<div id="newpost" class="uk-panel uk-panel-box uk-panel-header " style="margin-top: 20%">
 				<div id="newPosts">

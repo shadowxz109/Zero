@@ -47,11 +47,8 @@ public class SendEmail {
     public static void send(String toEmail , String content) {
         Session session = getSession();
         try {
-            System.out.println("--send--"+content);
-            // Instantiate a message
             Message msg = new MimeMessage(session);
 
-            //Set message attributes
             msg.setFrom(new InternetAddress(email));
             InternetAddress[] address = {new InternetAddress(toEmail)};
             msg.setRecipients(Message.RecipientType.TO, address);
@@ -59,7 +56,6 @@ public class SendEmail {
             msg.setSentDate(new Date());
             msg.setContent(content , "text/html;charset=utf-8");
 
-            //Send the message
             Transport.send(msg);
         }
         catch (MessagingException mex) {

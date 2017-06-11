@@ -3,16 +3,16 @@
 <mapper namespace="com.shadowxz.dao.UserDao" >
   <resultMap id="BaseResultMap" type="User" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="int" />
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="user_name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="email" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="active" jdbcType="INTEGER" javaType="int" />
+      <arg column="active" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="validateCode" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="sex" jdbcType="INTEGER" javaType="int" />
+      <arg column="sex" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="self_introduce" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="state" jdbcType="INTEGER" javaType="int" />
+      <arg column="state" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="register_time" jdbcType="DATE" javaType="java.util.Date" />
-      <arg column="massage_number" jdbcType="INTEGER" javaType="int" />
+      <arg column="massage_number" jdbcType="INTEGER" javaType="java.lang.Integer" />
     </constructor>
   </resultMap>
   <resultMap id="ResultMapForLogin" type="User" >
@@ -47,14 +47,14 @@
   <sql id="Base_Column_List" >
     id, user_name, email, active, validateCode, sex, self_introduce, state, register_time, massage_number
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
     from user
     where id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectDetailUserById" resultMap="DetailResultMap" parameterType="int">
+  <select id="selectDetailUserById" resultMap="DetailResultMap" parameterType="java.lang.Integer">
     SELECT
     user_name,email,sex,self_introduce,register_time,
     U.id AS id,
@@ -98,20 +98,20 @@
     WHERE user_name = #{userName,jdbcType=VARCHAR}
   </select>
 
-  <select id="selectAllUsers" resultMap="BaseResultMap" parameterType="int">
+  <select id="selectAllUsers" resultMap="BaseResultMap" parameterType="java.lang.Integer">
     SELECT
     <include refid="Base_Column_List" />
     FROM user
     LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="int" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from user
     where id = #{id,jdbcType=INTEGER}
   </delete>
 
   <insert id="insert" parameterType="User" >
-    <selectKey resultType="int" order="AFTER" keyProperty="id">
+    <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
       SELECT LAST_INSERT_ID() AS id
     </selectKey>
     insert into user (user_name, email,password,sex, self_introduce, state,register_time, massage_number,active,validateCode)

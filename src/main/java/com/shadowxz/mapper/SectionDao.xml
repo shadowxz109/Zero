@@ -4,16 +4,16 @@
 <mapper namespace="com.shadowxz.dao.SectionDao" >
   <resultMap id="BaseResultMap" type="Section" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="int" />
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="section_name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="introduce" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="post_number" jdbcType="INTEGER" javaType="int" />
+      <arg column="post_number" jdbcType="INTEGER" javaType="java.lang.Integer" />
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
     id, section_name, introduce, post_number
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     SELECT
     <include refid="Base_Column_List"/>
     FROM section
@@ -24,12 +24,12 @@
     <include refid="Base_Column_List" />
     FROM section
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="int" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from section
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="Section" >
-    <selectKey resultType="int" order="AFTER" keyProperty="id">
+    <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
       SELECT LAST_INSERT_ID() AS id
     </selectKey>
     insert into section (section_name, introduce,

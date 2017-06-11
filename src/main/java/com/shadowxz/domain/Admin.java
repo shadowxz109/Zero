@@ -5,31 +5,31 @@ package com.shadowxz.domain;
  */
 public class Admin {
 
-    private int id;
+    private Integer id;
 
     private String userName;
 
     private String password;
 
-    private int state;
+    private Integer state;
 
     public Admin(String userName,String password) {
         this.userName = userName;
         this.password = password;
     }
 
-    public Admin(int id, String userName, String password, int state) {
+    public Admin(Integer id, String userName, String password, Integer state) {
         this.id = id;
         this.userName = userName;
         this.password = password;
         this.state = state;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -49,11 +49,11 @@ public class Admin {
         this.password = password;
     }
 
-    public int getState() {
+    public Integer getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 

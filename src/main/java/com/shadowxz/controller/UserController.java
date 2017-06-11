@@ -78,10 +78,7 @@ public class UserController {
                                                            HttpServletRequest request,@PathVariable int urlUserId) {
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String, Object> result = new HashMap<>();
-        if (userId == null) {
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg", "请先登录");
-        } else if (userId == urlUserId) {
+        if (userId == urlUserId) {
             User user = userService.findUserById(userId);
             String userName = user.getUserName();
             if (oldPassword.equals(userService.findPasswordByUserName(userName))) {
@@ -201,10 +198,7 @@ public class UserController {
                                                       @RequestParam String selfIntroduce,HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result= new HashMap<>();
-        if(userId == null) {
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg", "请先登录");
-        }else if(userId != urlUserId){
+        if(userId != urlUserId){
             result.put("resultCode",Constant.RETURN_CODE_ERR);
             result.put("msg","不能修改他人的信息");
         }else {

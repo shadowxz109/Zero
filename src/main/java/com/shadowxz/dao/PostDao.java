@@ -14,7 +14,9 @@ public interface PostDao {
 
     //int insertSelective(Post record);
 
-    Post selectByPrimaryKey(int id);
+    Post selectByPrimaryKey(Map<String,Object> map);
+
+    Post selectBaseByPrimaryKey(int id);
 
     int updateByPrimaryKeySelective(Post record);
 

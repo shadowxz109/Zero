@@ -6,8 +6,8 @@ package com.shadowxz.domain;
 public final class Constant {
 
     public static final byte RETURN_CODE_SUCC = 0;
-    public static final byte RETURN_CODE_NOPRE = 1;
-    public static final byte RETURN_CODE_NOLOGIN = 2;
+    public static final byte RETURN_CODE_NOLOGIN = 1;
+    public static final byte RETURN_CODE_NOPRE = 2;
     public static final byte RETURN_CODE_ERR = 3;
 
 

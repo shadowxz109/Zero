@@ -8,7 +8,7 @@ import java.util.List;
 
 public class User {
 
-    private int id;
+    private Integer id;
 
     private String userName;
 
@@ -16,15 +16,15 @@ public class User {
 
     private String email;
 
-    private int active;
+    private Integer active;
 
     private String validateCode;
 
-    private int sex;
+    private Integer sex;
 
     private String selfIntroduce;
 
-    private int state;
+    private Integer state;
 
     private Date forbidTime;
 
@@ -51,7 +51,7 @@ public class User {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date registerTime;
 
-    private int massageNumber;
+    private Integer massageNumber;
 
     public User(Integer id, String userName, String email, Integer active, String validateCode, Integer sex, String selfIntroduce, Integer state, Date registerTime, Integer massageNumber) {
         this.id = id;
@@ -66,7 +66,7 @@ public class User {
         this.massageNumber = massageNumber;
     }
 
-    public User(String userName, String password, String email, int active, String validateCode, int sex, String selfIntroduce, int state, Date registerTime, int massageNumber) {
+    public User(String userName, String password, String email, Integer active, String validateCode, Integer sex, String selfIntroduce, Integer state, Date registerTime, Integer massageNumber) {
         this.userName = userName;
         this.password = password;
         this.email = email;
@@ -83,11 +83,11 @@ public class User {
         super();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -107,11 +107,11 @@ public class User {
         this.email = email == null ? null : email.trim();
     }
 
-    public int getSex() {
+    public Integer getSex() {
         return sex;
     }
 
-    public void setSex(int sex) {
+    public void setSex(Integer sex) {
         this.sex = sex;
     }
 
@@ -123,11 +123,11 @@ public class User {
         this.selfIntroduce = selfIntroduce == null ? null : selfIntroduce.trim();
     }
 
-    public int getState() {
+    public Integer getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 
@@ -139,11 +139,11 @@ public class User {
         this.registerTime = registerTime;
     }
 
-    public int getMassageNumber() {
+    public Integer getMassageNumber() {
         return massageNumber;
     }
 
-    public void setMassageNumber(int massageNumber) {
+    public void setMassageNumber(Integer massageNumber) {
         this.massageNumber = massageNumber;
     }
 
@@ -155,11 +155,11 @@ public class User {
         this.password = password;
     }
 
-    public int getActive() {
+    public Integer getActive() {
         return active;
     }
 
-    public void setActive(int active) {
+    public void setActive(Integer active) {
         this.active = active;
     }
 
@@ -175,7 +175,7 @@ public class User {
         return forbidTime;
     }
 
-    public void setForbidTime(int days) {
+    public void setForbidTime(Integer days) {
         Calendar cl = Calendar.getInstance();
         cl.setTime(new Date());
         cl.add(Calendar.DATE,days);

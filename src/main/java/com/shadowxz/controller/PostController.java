@@ -46,61 +46,31 @@ public class PostController {
         return new ModelAndView("main/postInfo");
     }
 
-    @RequestMapping(value ="/view/modifyPost",method = RequestMethod.GET)
-    public ModelAndView getModifyPostView(@PathVariable int postId){
-        Post post = postService.findPostById(postId);
-        Map<String,Object> result = new HashMap<>();
-        result.put("title",post.getTitle());
-        result.put("content",post.getContent());
-        return new ModelAndView("main/new2",result);
-    }
-
-    @RequestMapping(value = "/{postId}/page/{page}",method = RequestMethod.GET)
-    public @ResponseBody Map<String,Object> getPost(@PathVariable int postId,@PathVariable int page){
-        Post post = postService.findPostById(postId);
-        List<Reply> replies = replyService.findRepliesByPostId(postId,page);
-        Map<String,Object> result = new HashMap<>();
-        if(page == 1)
-            postService.increaseReadNumberById(postId);
-        result.put("post",post);
-        result.put("replies",replies);
-        return result;
-    }
-
     @RequestMapping(value ="/{postId}/replies/page/{page}",method = RequestMethod.POST)
     public @ResponseBody Map<String,Object> postReply(@PathVariable int postId, @RequestParam String content, HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
-        if(userId == null){
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg","请先登录");
-        }else {
-            User user = userService.findUserById(userId);
-            if(user.getForbidTime() != null) {
-                Date now = new Date();
-                if (now.before(user.getForbidTime())) {
-                    Forbid.checkForbid(user, result);
-                }
+        User user = userService.findUserById(userId);
+        if(user.getForbidTime() != null) {
+            Date now = new Date();
+            if (now.before(user.getForbidTime())) {
+                Forbid.checkForbid(user, result);
             }
-            Reply reply = new Reply(postId, userId, new Date(),content);
-            replyService.addReply(reply);
-            result.put("resultCode", Constant.RETURN_CODE_SUCC);
-            result.put("msg", "回复成功");
-            }
+        }
+        Reply reply = new Reply(postId, userId, new Date(),content);
+        replyService.addReply(reply);
+        result.put("resultCode", Constant.RETURN_CODE_SUCC);
+        result.put("msg", "回复成功");
         return result;
     }
 
-    @RequestMapping(value = "/{postId}/reply/{replyId}",method = RequestMethod.DELETE)
-    public  @ResponseBody Map<String,Object> deleteReply(@PathVariable int postId,@PathVariable int replyId,HttpServletRequest request){
+    @RequestMapping(value = "/reply/{replyId}",method = RequestMethod.DELETE)
+    public  @ResponseBody Map<String,Object> deleteReply(@PathVariable int replyId,HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
         Reply reply = replyService.findReplyById(replyId);
-        if(userId == null){
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg","请先登录");
-        }else if(userId.equals(reply.getUserId())){
+        if(userId.equals(reply.getUserId())){
             replyService.deleteReply(reply);
-            postService.decreaseReplyNumberById(postId);
             result.put("resultCode",Constant.RETURN_CODE_SUCC);
             result.put("msg","删除成功");
         }else {
@@ -115,8 +85,7 @@ public class PostController {
         Map<String,Object> result = new HashMap<>();
         if(page == 1)
             postService.increaseReadNumberById(postId);
-        Post post = postService.findPostById(postId);
-        User user = userService.findUserById(post.getUserId());
+        Post post = postService.findPostById(postId,page);
         result.put("post",post);
         return result;
     }

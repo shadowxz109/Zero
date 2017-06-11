@@ -3,11 +3,11 @@
 <mapper namespace="com.shadowxz.dao.ReplyDao" >
   <resultMap id="ResultMapWithBLOBs" type="Reply" >
     <constructor >
-      <idArg column="id" jdbcType="INTEGER" javaType="int" />
-      <arg column="post_id" jdbcType="INTEGER" javaType="int" />
-      <arg column="user_id" jdbcType="INTEGER" javaType="int" />
+      <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="post_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="user_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="reply_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
-      <arg column="state" jdbcType="INTEGER" javaType="int" />
+      <arg column="state" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="content" jdbcType="LONGVARCHAR" javaType="java.lang.String" />
     </constructor >
   </resultMap>
@@ -29,17 +29,17 @@
     content
   </sql>
 
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="int" >
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
     select R.id AS id,R.state as state,
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     from reply R
       LEFT OUTER JOIN user U ON R.user_id = U.id
-    where id = #{id,jdbcType=INTEGER}
+    where R.id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectAllReplies" resultMap="ResultMapWithBLOBs" parameterType="int" >
+  <select id="selectAllReplies" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
     select R.id AS id, R.state as state,
       <include refid="Base_Column_List" />
       ,
@@ -76,8 +76,14 @@
     delete from reply
     where id = #{id,jdbcType=INTEGER}
   </delete>
+
+  <delete id="deleteRepliesByPostId" parameterType="int">
+    DELETE FROM reply
+    WHERE post_id = #{id,jdbcType=INTEGER}
+  </delete>
+
   <insert id="insert" parameterType="Reply" >
-    <selectKey resultType="int" order="AFTER" keyProperty="id">
+    <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
       SELECT LAST_INSERT_ID() AS id
     </selectKey>
     insert into reply (post_id, user_id,

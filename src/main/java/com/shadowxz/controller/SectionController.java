@@ -52,14 +52,10 @@ public class SectionController {
                                                        @RequestParam String title,@RequestParam String content){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<String,Object>();
-        Post post = postService.findPostById(postId);
+        Post post = postService.findBasePostById(postId);
         post.setTitle(title);
         post.setContent(content);
-        if(userId == null){
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg","请先登录");
-        }
-        else if(userId.equals(post.getUserId())){
+        if(userId.equals(post.getUserId())){
             postService.updatePost(post);
             result.put("resultCode", Constant.RETURN_CODE_SUCC);
             result.put("msg","修改成功");
@@ -74,12 +70,8 @@ public class SectionController {
     public @ResponseBody Map<String,Object> deletePost(@PathVariable int postId,HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
-        Post post = postService.findPostById(postId);
-        if(userId==null) {
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg","请先登录");
-        }
-        else if(userId.equals(post.getUserId())) {
+        Post post = postService.findBasePostById(postId);
+        if(userId.equals(post.getUserId())) {
             postService.deletePostById(postId);
             result.put("resultCode", Constant.RETURN_CODE_SUCC);
             result.put("msg","删除成功");
@@ -95,22 +87,17 @@ public class SectionController {
                                                        @RequestParam String title,@RequestParam String content){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
-        if(userId==null){
-            result.put("resultCode",Constant.RETURN_CODE_ERR);
-            result.put("msg","请先登录");
-        } else {
-            User user = userService.findUserById(userId);
-            if(user.getForbidTime() != null) {
-                Date now = new Date();
-                if (now.before(user.getForbidTime())) {
-                    Forbid.checkForbid(user, result);
-                }
-            }else {
-                Post post = new Post(sectionId,userId,title,new Date(),new Date(),0,0,content);
-                postService.addPost(post);
-                result.put("resultCode", Constant.RETURN_CODE_SUCC);
-                result.put("msg", "创建帖子成功");
+        User user = userService.findUserById(userId);
+        if(user.getForbidTime() != null) {
+            Date now = new Date();
+            if (now.before(user.getForbidTime())) {
+                Forbid.checkForbid(user, result);
             }
+        }else {
+            Post post = new Post(sectionId,userId,title,new Date(),new Date(),0,0,content);
+            postService.addPost(post);
+            result.put("resultCode", Constant.RETURN_CODE_SUCC);
+            result.put("msg", "创建帖子成功");
         }
         return result;
     }

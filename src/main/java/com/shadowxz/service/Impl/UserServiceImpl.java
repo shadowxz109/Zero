@@ -22,11 +22,11 @@ public class UserServiceImpl implements UserService {
     public void sendEmail(User user){
         String email = user.getEmail();
         StringBuffer sb=new StringBuffer("点击下面链接激活账号，48小时生效，否则重新注册账号，链接只能使用一次，请尽快激活！</br>");
-        sb.append("<a href=\"http://localhost:8080/user/user?action=activate&email=");
+        sb.append("<a href=\"http://localhost:8080/user?action=activate&email=");
         sb.append(email);
         sb.append("&validateCode=");
         sb.append(user.getValidateCode());
-        sb.append("\">http://localhost:8080/user/user?action=activate&email=");
+        sb.append("\">http://localhost:8080/user?action=activate&email=");
         sb.append(email);
         sb.append("&validateCode=");
         sb.append(user.getValidateCode());
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
         }else{
             if(user.getActive() == 1) {
                 result.put("resultCode", Constant.RETURN_CODE_ERR);
-                result.put("msg", "该邮箱已激活");
+                result.put("msg", "该邮箱已注册");
             }else{
                 Date currentTime = new Date();
                 Calendar cl = Calendar.getInstance();
@@ -86,13 +86,13 @@ public class UserServiceImpl implements UserService {
                 Date lastActiveTime = cl.getTime();
                 if(currentTime.after(lastActiveTime)){
                     result.put("resultCode",Constant.RETURN_CODE_ERR);
-                    result.put("msg","该激活已过期");
+                    result.put("msg","该激活码已过期");
                 }else {
                     if(vCode.equals(user.getValidateCode())){
                         user.setActive(1);
                         userDao.updateByPrimaryKeySelective(user);
                         result.put("resultCode",Constant.RETURN_CODE_SUCC);
-                        result.put("msg","激活成功");
+                        result.put("msg","激活成功,正在为你跳转...");
                     }else {
                         result.put("resultCode",Constant.RETURN_CODE_ERR);
                         result.put("msg","激活码错误");

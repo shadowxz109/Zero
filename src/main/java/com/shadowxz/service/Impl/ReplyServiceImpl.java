@@ -30,7 +30,7 @@ public class ReplyServiceImpl implements ReplyService {
     public void addReply(Reply reply) {
         int postId = reply.getPostId();
         postService.increaseReplyNumberById(postId);
-        Post post = postService.findPostById(postId);
+        Post post = postService.findBasePostById(postId);
         post.setReplyTime(new Date());
         postService.updatePost(post);
         replyDao.insert(reply);

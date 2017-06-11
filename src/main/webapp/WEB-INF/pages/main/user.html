@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>主页</title>
+    <title>用户信息</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/resources/css/uikit.css" />
     <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
@@ -23,6 +23,34 @@
                         user: data.user,
                         posts: data.user.posts,
                         replies: data.user.replies
+                    },
+                    methods:{
+                        deletePost: function (event) {
+                            var postId = $(event.target).attr('data-key');
+                            var url = "/api/section/post/" + postId;
+                            $.delete(url,null,function (result){
+                                if((result.resultCode == "0")){
+                                    setTimeout("alert(result.msg)",2000);
+                                    location.reload();
+                                }else if(result.resultCode=="1"){
+                                    setTimeout("alert(result.msg)",2000);
+                                    location.assign("/user/signin");
+                                }else alert(result.msg);
+                            })
+                        },
+                        deleteReply: function (event) {
+                            var replyId = $(event.target).attr('data-key');
+                            var url = "/api/post/reply/" + replyId;
+                            $.delete(url,null,function (result){
+                                if((result.resultCode == "0")){
+                                    setTimeout("alert(result.msg)",2000);
+                                    location.reload();
+                                }else if(result.resultCode=="1"){
+                                    setTimeout("alert(result.msg)",2000);
+                                    location.assign("/user/signin");
+                                }else alert(result.msg);
+                            })
+                        }
                     }
                 });
             }
@@ -33,28 +61,38 @@
                 $.get(url,function (result) {
                     if(result.resultCode == "0"){
                         _initMain(result);
+                        _initUser(null,result);
                     }
                 })
             }
 
             _getUserDetailData();
-            _initEvent();
             _getUserData(false,true);
-            _getNewPosts()
+            _getNewPosts();
         });
 
-        function _initEvent() {
-            $('#delete-post').click(function () {
-
-            });
+        var user = null;
+        var baseuser = null;
+        var callnumber = 0;
+        function _initUser(basedata,detaildata){
+            callnumber++;
+            if(basedata != null)
+                baseuser = basedata.user;
+            if(detaildata != null)
+                user = detaildata.user;
+            if(callnumber == 2 && baseuser!=null && user!=null)
+                _checkUser()
         }
 
-        function _checkUser(data) {
-            if(data.user != null ){
-                if(user.id != data.user.id){
-                    $("#delete-post").addClass("uk-hidden");
-                }else {$("#delete-post").removeClass("uk-hidden");}
-            }else {$("#delete-post").addClass("uk-hidden");}
+        function _checkUser(){
+            if(user.id != baseuser.id) {
+                $(".delete-post").addClass("uk-hidden");
+                $(".delete-reply").addClass("uk-hidden");
+            }
+            else {
+                $(".delete-post").removeClass("uk-hidden");
+                $(".delete-reply").removeClass("uk-hidden");
+            }
         }
     </script>
 </head>
@@ -106,7 +144,7 @@
                             <article class="uk-comment">
                                 <header class="uk-comment-header">
                                     <h4 class="uk-comment-title"><a v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a></h4>
-                                    <div class="uk-comment-meta">发表时间：{{post.pulishTime}}<a id="delete-post" class="uk-hidden" v-bind:data-key="post.id" style="float: right">删除</a></div>
+                                    <div class="uk-comment-meta">发表时间：{{post.pulishTime}}<a v-on:click="deletePost" class="delete-post uk-hidden" v-bind:data-key="post.id" style="float: right">删除</a></div>
                                 </header>
                             </article>
                             <hr/>
@@ -122,9 +160,9 @@
                             <article class="uk-comment">
                                 <header class="uk-comment-header">
                                     <h4 class="uk-comment-title">在<a v-bind:href="'/post/'+reply.postId+'/replies/page/1'">{{reply.post.title}}</a>下的回复</h4>
-                                    <div class="uk-comment-meta">{{reply.replyTime}}</div>
+                                    <div class="uk-comment-meta">{{reply.replyTime}}<a v-on:click="deleteReply" class="delete-reply uk-hidden" v-bind:data-key="reply.id" style="float: right">删除</a></div>
                                 </header>
-                                <div class="uk-comment-body">{{reply.content}}<a id="delete-repli" class="uk-hidden" v-bind:data-key="reply.id" style="float: right">删除</a></div>
+                                <div class="uk-comment-body">{{reply.content}}</div>
                             </article>
                             <hr/>
                         </li>
@@ -138,9 +176,14 @@
                 <div v-if="user != null">
                     <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
                     <h5>{{user.selfIntroduce}}</h5>
+                    <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
                 </div>
-                <h3 v-else class="uk-panel-title">请先登录</h3>
-                <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
+                <div v-else>
+                    <h3 class="uk-panel-title"><a href="/user/signup">现在注册</a></h3>
+                    <div>
+                        已有账号请<button class="uk-button" ><a href="/user/signin">登录</a></button>
+                    </div>
+                </div>
             </div>
             <div id="newpost" class="uk-panel uk-panel-box uk-panel-header" style="margin-top: 20%">
                 <div id="newPosts">

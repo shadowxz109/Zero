@@ -264,7 +264,7 @@ public class AdminController {
 
     @RequestMapping(value = "/post/{postId}",method = RequestMethod.GET)
     public @ResponseBody Post getPost(@PathVariable int postId){
-        return postService.findPostById(postId);
+        return postService.findBasePostById(postId);
     }
 
     @RequestMapping(value = "/post/{postId}",method = RequestMethod.DELETE)

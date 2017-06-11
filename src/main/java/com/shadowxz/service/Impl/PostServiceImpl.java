@@ -1,6 +1,7 @@
 package com.shadowxz.service.Impl;
 
 import com.shadowxz.dao.PostDao;
+import com.shadowxz.dao.ReplyDao;
 import com.shadowxz.domain.Post;
 import com.shadowxz.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostDao postDao;
 
+    @Autowired ReplyDao replyDao;
+
     public void addPost(Post post) {
         postDao.insert(post);
     }
@@ -34,6 +37,7 @@ public class PostServiceImpl implements PostService {
 
     public void deletePostById(int id) {
         postDao.deleteByPrimaryKey(id);
+        replyDao.deleteRepliesByPostId(id);
     }
 
     public void increaseReplyNumberById(int id){
@@ -48,8 +52,19 @@ public class PostServiceImpl implements PostService {
         postDao.increaseReadNumberById(id);
     }
 
-    public Post findPostById(int id) {
-        return postDao.selectByPrimaryKey(id);
+    public Post findPostById(int id,int page) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        map.put("offset",(page-1)*10);
+        Post post = postDao.selectByPrimaryKey(map);
+        if(post == null){
+            post = postDao.selectBaseByPrimaryKey(id);
+        }
+        return post;
+    }
+
+    public Post findBasePostById(int id){
+        return postDao.selectBaseByPrimaryKey(id);
     }
 
     public List<Post> findPostsBySectionId(int sectionId,int page) {

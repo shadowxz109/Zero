@@ -3,10 +3,10 @@
 <mapper namespace="com.shadowxz.dao.AdminDao" >
     <resultMap id="BaseResultMap" type="Admin" >
         <constructor >
-            <idArg column="id" jdbcType="INTEGER" javaType="int" />
+            <idArg column="id" jdbcType="INTEGER" javaType="java.lang.Integer" />
             <arg column="user_name" jdbcType="VARCHAR" javaType="java.lang.String" />
             <arg column="password" jdbcType="VARCHAR" javaType="java.lang.String" />
-            <arg column="state" jdbcType="INTEGER" javaType="int" />
+            <arg column="state" jdbcType="INTEGER" javaType="java.lang.Integer" />
         </constructor>
     </resultMap>
     <resultMap id="ResultMapForLogin" type="Admin" >
@@ -17,7 +17,7 @@
     <sql id="Base_Column_List" >
         id, user_name,state
     </sql>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="int" >
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
         select
         <include refid="Base_Column_List" />
         from admin
@@ -36,20 +36,20 @@
         WHERE user_name = #{userName,jdbcType=VARCHAR}
     </select>
 
-    <select id="selectAllUsers" resultMap="BaseResultMap" parameterType="int">
+    <select id="selectAllUsers" resultMap="BaseResultMap" parameterType="java.lang.Integer">
         SELECT
         <include refid="Base_Column_List" />
         FROM user
         LIMIT #{offset,jdbcType=INTEGER}
     </select>
 
-    <delete id="deleteByPrimaryKey" parameterType="int" >
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
         delete from user
         where id = #{id,jdbcType=INTEGER}
     </delete>
 
     <insert id="insert" parameterType="Admin" >
-        <selectKey resultType="int" order="AFTER" keyProperty="id">
+        <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
             SELECT LAST_INSERT_ID() AS id
         </selectKey>
         insert into user (user_name, password,state)

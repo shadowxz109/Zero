@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html>
 <head>
-	<title>主页</title>
+	<title>Zero论坛</title>
 	<meta charset="utf-8">
     <link rel="stylesheet" href="/resources/css/uikit.css" />
     <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
@@ -111,9 +111,14 @@
                 <div v-if="user != null">
                     <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
                     <h5>{{user.selfIntroduce}}</h5>
+                    <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
                 </div>
-                <h3 v-else class="uk-panel-title">请先登录</h3>
-                <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
+                <div v-else>
+                    <h3 class="uk-panel-title"><a href="/user/signup">现在注册</a></h3>
+                    <div>
+                        已有账号请<button class="uk-button" ><a href="/user/signin">登录</a></button>
+                    </div>
+                </div>
             </div>
             <div id="newpost" class="uk-panel uk-panel-box uk-panel-header " style="margin-top: 20%">
                 <div id="newPosts">

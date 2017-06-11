@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <title>主页</title>
+    <title>创建新帖子</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/resources/css/uikit.css" />
     <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
@@ -27,7 +27,6 @@
 
             function _postNewPost() {
                 var sectionId = $('#sections option:selected').val();
-                alert(sectionId);
                 var title = $('#title').val();
                 var content = editor.codemirror.getValue();
                 var data = {
@@ -36,11 +35,13 @@
                 };
                 var url = "/api/section/"+sectionId+"/post";
                 $.post(url,data,function (result) {
-                    if(result.resultCode == "0"){
-                        location.assign("/");
-                    }else {
+                    if((result.resultCode == "0")){
+                       alert(result.msg);
+                        location.assign("/section/"+sectionId+"/post/page/1")
+                    }else if(result.resultCode=="1"){
                         alert(result.msg);
-                    }
+                        location.assign('/user/signin');
+                    }else alert(result.msg);
                 })
             }
 
@@ -73,13 +74,6 @@
                 }
             })
         }
-        function _checkSignin(data) {
-            if(data.user == null){
-                $('#user-check').removeClass("uk-hidden");
-            }else{
-                $('#user-check').addClass("uk-hidden");
-            }
-        }
     </script>
 </head>
 <body >
@@ -106,7 +100,6 @@
     <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
         <div class="uk-width-large-4-5 uk-width-small-1-1">
             <div class="uk-padding-top-remove ">
-                <div id= "user-check" class="uk-alert uk-alert-danger uk-hidden"><h3>请先登录</h3></div>
                 <div class="uk-margin">
                     <div class="uk-button uk-form-select uk-width-1-5" data-uk-form-select>
                         <span>选择板块</span>
@@ -137,9 +130,14 @@
                 <div v-if="user != null">
                     <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
                     <h5>{{user.selfIntroduce}}</h5>
+                    <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
                 </div>
-                <h3 v-else class="uk-panel-title">请先登录</h3>
-                <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
+                <div v-else>
+                    <h3 class="uk-panel-title"><a href="/user/signup">现在注册</a></h3>
+                    <div>
+                        已有账号请<button class="uk-button" ><a href="/user/signin">登录</a></button>
+                    </div>
+                </div>
             </div>
             <div id="newpost" class="uk-panel uk-panel-box uk-panel-header " style="margin-top: 20%">
                 <div id="newPosts">

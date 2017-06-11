@@ -1,13 +1,17 @@
 package com.shadowxz.controller;
 
+import com.shadowxz.domain.Constant;
 import com.shadowxz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by xz on 2017/5/27.
@@ -29,19 +33,24 @@ public class ViewController {
     }
 
     @RequestMapping(value = "/user/signin",method = RequestMethod.GET)
-    public ModelAndView getUserLoginView(HttpServletRequest request, ModelAndView modelAndView){
+    public ModelAndView getUserLoginView(HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         if(userId == null){
-            modelAndView.setViewName("main/signin");
+            return new ModelAndView("main/signin");
         }else {
-            modelAndView.setViewName("main/index");
+            return new ModelAndView("main/index");
         }
-        return modelAndView;
     }
     
     @RequestMapping(value = "/post/new",method = RequestMethod.GET)
-    public ModelAndView getNewPost(){
-        return new ModelAndView("main/new"); }
+    public ModelAndView getNewPost(HttpServletRequest request){
+        Integer userId = (Integer) request.getSession().getAttribute("userId");
+        if(userId == null){
+            return new ModelAndView("main/signin");
+        }else {
+            return new ModelAndView("main/new");
+        }
+    }
 
     @RequestMapping(value = "/post/{postId}/replies/page/{page}",method = RequestMethod.GET)
     public ModelAndView getPost(){
@@ -61,5 +70,13 @@ public class ViewController {
     @RequestMapping(value = "/user",method = RequestMethod.GET)
     public ModelAndView activeUser(HttpServletRequest request){
         return new ModelAndView("main/active");
+    }
+
+    @RequestMapping(value = "/unlogin",method = RequestMethod.GET)
+    public @ResponseBody Map<String,Object> unLogin(){
+        Map<String,Object> result = new HashMap<>();
+        result.put("resultCode", Constant.RETURN_CODE_NOLOGIN);
+        result.put("msg","请先登录");
+        return result;
     }
 }

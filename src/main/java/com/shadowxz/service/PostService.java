@@ -17,7 +17,9 @@ public interface PostService {
 
     void deletePostById(int id);
 
-    Post findPostById(int id);
+    Post findPostById(int id,int page);
+
+    Post findBasePostById(int id);
 
     List<Post> findPostsBySectionId(int sectionId,int page);
 

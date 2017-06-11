@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 public class Post {
-    private int id;
+    private Integer id;
 
-    private int sectionId;
+    private Integer sectionId;
 
-    private int userId;
+    private Integer userId;
 
     private String title;
 
@@ -20,9 +20,9 @@ public class Post {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date replyTime;
 
-    private int readNumber;
+    private Integer readNumber;
 
-    private int replyNumber;
+    private Integer replyNumber;
 
     private String content;
 
@@ -30,13 +30,14 @@ public class Post {
 
     private User postUser;
 
-    public Post(Integer id, Integer sectionId, Integer userId, String title, Date pulishTime, Date replyTime, Integer readNumber, Integer replyNumber) {
+    public Post(Integer id, Integer sectionId, Integer userId, String title, Date pulishTime, Date replyTime, String content,Integer readNumber, Integer replyNumber) {
         this.id = id;
         this.sectionId = sectionId;
         this.userId = userId;
         this.title = title;
         this.pulishTime = pulishTime;
         this.replyTime = replyTime;
+        this.content = content;
         this.readNumber = readNumber;
         this.replyNumber = replyNumber;
     }
@@ -74,27 +75,27 @@ public class Post {
         this.postUser = user;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public int getSectionId() {
+    public Integer getSectionId() {
         return sectionId;
     }
 
-    public void setSectionId(int sectionId) {
+    public void setSectionId(Integer sectionId) {
         this.sectionId = sectionId;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -122,19 +123,19 @@ public class Post {
         this.replyTime = replyTime;
     }
 
-    public int getReadNumber() {
+    public Integer getReadNumber() {
         return readNumber;
     }
 
-    public void setReadNumber(int readNumber) {
+    public void setReadNumber(Integer readNumber) {
         this.readNumber = readNumber;
     }
 
-    public int getReplyNumber() {
+    public Integer getReplyNumber() {
         return replyNumber;
     }
 
-    public void setReplyNumber(int replyNumber) {
+    public void setReplyNumber(Integer replyNumber) {
         this.replyNumber = replyNumber;
     }
 

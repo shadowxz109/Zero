@@ -9,6 +9,7 @@
       <arg column="title" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="pulish_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
       <arg column="reply_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="content" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="read_number" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="reply_number" jdbcType="INTEGER" javaType="java.lang.Integer" />
     </constructor>
@@ -37,13 +38,10 @@
     </collection>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, section_id, user_id, title, pulish_time, reply_time, read_number, reply_number
-  </sql>
-  <sql id="Blob_Column_List" >
-    content
+    id, section_id, user_id, title, pulish_time ,content ,reply_time, read_number, reply_number
   </sql>
 
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="int" >
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.util.Map" >
     select P.id AS id,
       P.section_id AS section_id,
       P.user_id AS user_id,
@@ -63,7 +61,8 @@
          LEFT OUTER JOIN user U1 ON P.user_id = U1.id
          LEFT OUTER JOIN reply R1 ON R1.post_id = P.id
          LEFT OUTER JOIN user U2 ON R1.user_id = U2.id
-    where P.id = #{id,jdbcType=INTEGER}
+    WHERE P.id = #{id,jdbcType=INTEGER}
+    LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 
   <select id="selectAllPosts" resultMap="BaseResultMap" parameterType="int">
@@ -72,6 +71,13 @@
     FROM post
     ORDER BY id DESC
     LIMIT #{offset,jdbcType=INTEGER},10
+  </select>
+
+  <select id="selectBaseByPrimaryKey" resultMap="BaseResultMap" parameterType="int">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM post
+    WHERE id = #{id,jdbcType=INTEGER}
   </select>
 
   <select id="selectNewPosts" resultMap="BaseResultMap">
@@ -98,13 +104,13 @@
     LIMIT #{offset,jdbcType=INTEGER}
   </select>
 
-  <delete id="deleteByPrimaryKey" parameterType="int" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from post
     where id = #{id,jdbcType=INTEGER}
   </delete>
 
   <insert id="insert" parameterType="Post" >
-    <selectKey resultType="int" order="AFTER" keyProperty="id">
+    <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
       SELECT LAST_INSERT_ID() AS id
     </selectKey>
     insert into post (section_id, user_id,
@@ -208,19 +214,19 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <update id="increaseReadNumberById" parameterType="int" >
+  <update id="increaseReadNumberById" parameterType="java.lang.Integer" >
     UPDATE post
     SET read_number = read_number + 1
     WHERE id = #{id,jdbcType=INTEGER}
   </update>
 
-  <update id="increaseReplyNumberById" parameterType="int" >
+  <update id="increaseReplyNumberById" parameterType="java.lang.Integer" >
     UPDATE post
     SET reply_number = reply_number + 1
     WHERE id = #{id,jdbcType=INTEGER}
   </update>
 
-  <update id="decreaseReplyNumberById" parameterType="int" >
+  <update id="decreaseReplyNumberById" parameterType="java.lang.Integer" >
     UPDATE post
     SET reply_number = reply_number - 1
     WHERE id = #{id,jdbcType=INTEGER}

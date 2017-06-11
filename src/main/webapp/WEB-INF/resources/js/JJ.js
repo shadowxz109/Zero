@@ -26,13 +26,13 @@ function _getUserData(neww,user) {
             _initHeader(data);
             _initUserInfo(data);
             if(neww == true) _checkSignin(data);
-            if(user == true) _checkUser(data);
+            if(user == true) _initUser(data);
         });
     }else {
         _initHeader(data);
         _initUserInfo(data);
         if(neww == true) _checkSignin(data);
-        if(user == true) _checkUser(data);
+        if(user == true) _initUser(data);
     }
 }
 
