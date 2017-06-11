@@ -27,6 +27,12 @@
             </bean>
         </mvc:message-converters>
     </mvc:annotation-driven>
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/api/**" />
+            <bean class="com.shadowxz.Interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
     <mvc:default-servlet-handler/>
     <mvc:resources mapping="/resources/**" location="/WEB-INF/resources/"/>
     <aop:aspectj-autoproxy/>
