@@ -62,7 +62,7 @@
             _initEvent();
             _getSectionsData();
             _getNewPosts();
-            _getUserData(true);
+            _getUserData();
         });
 
         function _getSectionsData() {
@@ -84,7 +84,7 @@
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signup">注册</a>
                 <a class="uk-link-muted uk-contrast " v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a>
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signin">登录</a>
-                <a onclick="_loginout()" class="uk-link-muted uk-contrast " v-else >登出</a>
+                <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
             </div>
             <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
             <div id="bianbian" class="uk-offcanvas">

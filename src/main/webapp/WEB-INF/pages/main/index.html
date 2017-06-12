@@ -63,7 +63,7 @@
         });
     </script>
 </head>
-<body>
+<body >
 <div  class="uk-height-1-1 uk-grid">
     <div id="header" class="uk-block uk-block-secondary uk-width-1-1 uk-margin-bottom uk-padding-remove">
         <div class="uk-width-large-2-3 uk-container-center">
@@ -71,7 +71,7 @@
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signup">注册</a>
                 <a class="uk-link-muted uk-contrast " v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a>
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signin">登录</a>
-                <a onclick="_loginout()" class="uk-link-muted uk-contrast " v-else >登出</a>
+                <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
             </div>
             <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
             <div id="bianbian" class="uk-offcanvas">
@@ -98,7 +98,13 @@
                             回复：<div class=" uk-badge uk-badge-notification">{{post.replyNumber}}</div>
                         </div>
 		                <div class="uk-panel-title"><a v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a></div>
-		                <div style="float: right; font-size: small">发表：{{post.pulishTime}} 回复：{{post.replyTime}}</div>
+                        <div>
+                            <i class="uk-icon-user"><a v-bind:href="'/user/'+post.userId">{{post.user.userName}}</a></i>
+                            <div style="float: right">
+                                <i class="uk-icon-send">{{post.pulishTime}}</i>
+                                <i class="uk-icon-reply">{{post.replyTime}}</i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

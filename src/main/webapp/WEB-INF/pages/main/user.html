@@ -22,7 +22,9 @@
                     data:{
                         user: data.user,
                         posts: data.user.posts,
-                        replies: data.user.replies
+                        replies: data.user.replies,
+                        sex_modify: false,
+                        selfIntro_modify: false
                     },
                     methods:{
                         deletePost: function (event) {
@@ -30,10 +32,10 @@
                             var url = "/api/section/post/" + postId;
                             $.delete(url,null,function (result){
                                 if((result.resultCode == "0")){
-                                    setTimeout("alert(result.msg)",2000);
+                                   alert(result.msg);
                                     location.reload();
                                 }else if(result.resultCode=="1"){
-                                    setTimeout("alert(result.msg)",2000);
+                                    alert(result.msg);
                                     location.assign("/user/signin");
                                 }else alert(result.msg);
                             })
@@ -43,12 +45,40 @@
                             var url = "/api/post/reply/" + replyId;
                             $.delete(url,null,function (result){
                                 if((result.resultCode == "0")){
-                                    setTimeout("alert(result.msg)",2000);
+                                    alert(result.msg);
                                     location.reload();
                                 }else if(result.resultCode=="1"){
-                                    setTimeout("alert(result.msg)",2000);
+                                    alert(result.msg);
                                     location.assign("/user/signin");
                                 }else alert(result.msg);
+                            })
+                        },
+                        modifySex: function () {
+                            main.sex_modify = true;
+                        },
+                        modifySelfIntroduce: function () {
+                            main.selfIntro_modify = true;
+                        },
+                        postSex: function () {
+                            main.sex_modify = false;
+                            var data = {sex: main.user.sex};
+                            var url = "/api/user/sex";
+                            $.post(url,data,function (result) {
+                                if(result.resultCode=="1"){
+                                    alert(result.msg);
+                                    location.assign("/user/signin");
+                                }
+                            })
+                        },
+                        postSelfIntroduce:function () {
+                            main.selfIntro_modify = false;
+                            var data = {selfIntroduce: main.user.selfIntroduce};
+                            var url = "/api/user/selfIntroduce";
+                            $.post(url,data,function (result) {
+                                if(result.resultCode=="1"){
+                                    alert(result.msg);
+                                    location.assign("/user/signin");
+                                }
                             })
                         }
                     }
@@ -67,7 +97,7 @@
             }
 
             _getUserDetailData();
-            _getUserData(false,true);
+            _getUserData(true);
             _getNewPosts();
         });
 
@@ -88,10 +118,17 @@
             if(user.id != baseuser.id) {
                 $(".delete-post").addClass("uk-hidden");
                 $(".delete-reply").addClass("uk-hidden");
+                $("#sex-modify-btn").addClass("uk-hidden");
+                $("#self-introduce-modify").addClass("uk-hidden");
             }
             else {
                 $(".delete-post").removeClass("uk-hidden");
                 $(".delete-reply").removeClass("uk-hidden");
+                $("#sex-modify-btn").removeClass("uk-hidden");
+                $("#self-introduce-modify").removeClass("uk-hidden");
+                $("#user-image").mouseover(function () {
+                    
+                })
             }
         }
     </script>
@@ -104,7 +141,7 @@
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signup">注册</a>
                 <a class="uk-link-muted uk-contrast " v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a>
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signin">登录</a>
-                <a onclick="_loginout()" class="uk-link-muted uk-contrast " v-else >登出</a>
+                <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
             </div>
             <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
             <div id="bianbian" class="uk-offcanvas">
@@ -123,11 +160,42 @@
                 <div class="uk-panel uk-panel-box uk-panel-divider uk-panel-header ">
                     <div class="uk-comment uk-comment-primary">
                         <header class="uk-comment-header">
-                            <div class="uk-border-circle uk-comment-avatar" style="width: 50px;height: 50px;overflow: hidden;">
+                            <div id="user-image" class="uk-comment-avatar" style="width: 100px;height: 100px;overflow: hidden;">
                                 <img src="/resources/img/3.jpg">
                             </div>
-                            <h3 class="uk-comment-title">{{user.userName}}</h3>
-                            <h5>{{user.selfIntroduce}}</h5>
+                            <div><h4>{{user.userName}}</h4></div>
+                            <div>
+                                <h5>
+                                    <div v-if="sex_modify == false">
+                                        <a v-if="user.sex == 0"><i class="uk-icon-mars uk-icon-small"></i></a>
+                                        <a v-if="user.sex == 1"><i class="uk-icon-venus  uk-icon-small"></i></a>
+                                        &nbsp;&nbsp;&nbsp;<a v-on:click="modifySex" id="sex-modify-btn" class="uk-hidden">修改</a>
+                                    </div>
+                                    <div v-else>
+                                        <div class="uk-width-1-2">
+                                            <span class="uk-float-left">性别：</span>
+                                            <input type="radio" value="0" maxlength="50" v-model="user.sex">男
+                                            <input type="radio" value="1" maxlength="50" v-model="user.sex">女
+                                            <button v-on:click="postSex" class="uk-button uk-button-small">保存</button>
+                                        </div>
+                                    </div>
+                                </h5>
+                            </div>
+                            <div>
+                                <h5>
+                                    <div v-if="selfIntro_modify == false">{{user.selfIntroduce}}
+                                        &nbsp;&nbsp;&nbsp;<a v-on:click="modifySelfIntroduce" id="self-introduce-modify" class="uk-hidden">修改</a>
+                                    </div>
+                                    <div v-else>
+                                        <form class="uk-form">
+                                            <div class="uk-form-row">
+                                                <input v-model="user.selfIntroduce" v-bind:placeholder="user.selfIntroduce" class="uk-width-2-3">
+                                                <button v-on:click="postSelfIntroduce" class="uk-button uk-button-small">保存</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </h5>
+                            </div>
                         </header>
                     </div>
                     <div class="uk-panel uk-panel-box">

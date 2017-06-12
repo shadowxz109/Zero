@@ -9,12 +9,16 @@
     <script src="/resources/js/jquery.md5.js"></script>
     <script src="/resources/js/uikit.js"></script>
     <script src="/resources/js/JJ.js"></script>
+    <script src="/resources/js/md5.js"></script>
+    <script src="/resources/js/components/form-select.js"></script>
+    <script src="/resources/js/vue.js"></script>
+    <script src="/resources/js/js.cookie.js"></script>
     <script>
         $(function() {
-            function _init() {
-                _checkNull();
-                _submitForm();
-            }
+            _checkNull();
+            _submitForm();
+            _getUserData();
+            _getNewPosts();
             function _checkNull(){
                 $('#userName').blur(function () {
                     var username = $('#userName').val();
@@ -56,41 +60,82 @@
                     return false;
                 });
             }
-            _init();
         })
     </script>
 </head>
-<body class="uk-height-1-1">
-<div class="uk-vertical-align uk-text-center uk-height-1-1" style="background-color: lightblue">
-    <div class="uk-vertical-align-middle" style="width: 360px">
-        <p><a href="/" class="uk-icon-button"><i class="uk-icon-comments"></i></a><a href="/">论坛</a></p>
-        <form id="signin" class="uk-panel uk-panel-box uk-form">
-            <div class="uk-alert uk-alert-danger uk-hidden"></div>
-            <div class="uk-form-row">
-                <div class="uk-form-icon uk-width-1-1">
-                    <i class="uk-icon-user"></i>
-                    <input id="userName" name="userName" type="text" placeholder="用户名" maxlength="50" class="uk-width-1-1 uk-form-middle">
+<body >
+<div class="uk-height-1-1 uk-grid">
+    <div id="header" class="uk-block uk-block-secondary uk-width-1-1 uk-margin-bottom uk-padding-remove">
+        <div class="uk-width-large-2-3 uk-container-center">
+            <div class="uk-float-right uk-hidden-small">
+                <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signup">注册</a>
+                <a class="uk-link-muted uk-contrast " v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a>
+                <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signin">登录</a>
+                <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
+            </div>
+            <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
+            <div id="bianbian" class="uk-offcanvas">
+                <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">注册</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="/">登录</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">我的</a></div>
                 </div>
-                <div id= "username-check" class="uk-alert uk-alert-danger uk-hidden">用户名不能为空</div>
             </div>
-            <div class="uk-form-row">
-                <div class="uk-form-icon uk-width-1-1">
-                    <i class="uk-icon-lock"></i>
-                    <input id="password" name="password" type="password" placeholder="密码" maxlength="50" class="uk-width-1-1 uk-form-middle">
+            <h2 class="uk-contrast"><a href="/">Zero</a></h2>
+        </div>
+    </div>
+    <div class="uk-width-small-1-1 uk-width-medium-2-3 uk-width-large-3-4 uk-container-center uk-flex uk-flex-space-between">
+        <div class=" uk-panel uk-panel-box uk-width-large-4-5 uk-width-small-1-1">
+            <div style="width: 360px">
+                <form id="signin" class="uk-form">
+                    <div class="uk-alert uk-alert-danger uk-hidden"></div>
+                    <div class="uk-form-row">
+                        <div class="uk-form-icon uk-width-1-1">
+                            <i class="uk-icon-user"></i>
+                            <input id="userName" name="userName" type="text" placeholder="用户名" maxlength="50" class="uk-width-1-1 uk-form-middle">
+                        </div>
+                        <div id= "username-check" class="uk-alert uk-alert-danger uk-hidden">用户名不能为空</div>
+                    </div>
+                    <div class="uk-form-row">
+                        <div class="uk-form-icon uk-width-1-1">
+                            <i class="uk-icon-lock"></i>
+                            <input id="password" name="password" type="password" placeholder="密码" maxlength="50" class="uk-width-1-1 uk-form-middle">
+                        </div>
+                        <div id= "password-check" class="uk-alert uk-alert-danger uk-hidden">密码不能为空</div>
+                        <div id="signin-msg" class="uk-alert uk-alert-danger uk-hidden"></div>
+                    </div>
+                    <div class="uk-form-row">
+                        <button id="signin-btn" class="uk-button uk-button-primary uk-button-middle"><i class="uk-icon-sign-in"></i> 登录</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- 侧边栏-->
+        <div class="uk-hidden-small uk-width-1-4" style="margin-left: 5%;">
+            <div id="userInfo" class="uk-panel uk-panel-box uk-panel-header ">
+                <div v-if="user != null">
+                    <h3 class="uk-panel-title"><a v-bind:href="'/user/'+user.id">{{user.userName}}</a></h3>
+                    <h5>{{user.selfIntroduce}}</h5>
+                    <button class="uk-button" ><a href="/post/new">创建新帖子</a></button>
                 </div>
-                <div id= "password-check" class="uk-alert uk-alert-danger uk-hidden">密码不能为空</div>
-                <div id="signin-msg" class="uk-alert uk-alert-danger uk-hidden"></div>
+                <div v-else>
+                    <h3 class="uk-panel-title"><a href="/user/signup">现在注册</a></h3>
+                    <div>
+                        已有账号请<button class="uk-button" ><a href="/user/signin">登录</a></button>
+                    </div>
+                </div>
             </div>
-            <div class="uk-form-row">
-                <button id="signin-btn" class="uk-width-1-3 uk-button uk-button-primary uk-button-middle"><i class="uk-icon-sign-in"></i> 登录</button>
+            <div id="newpost" class="uk-panel uk-panel-box uk-panel-header " style="margin-top: 20%">
+                <div id="newPosts">
+                    <h3 class="uk-panel-title">最新帖子</h3>
+                    <div v-for="post in newPosts">
+                        <a  v-bind:href="'/post/'+post.id+'/replies/page/1'">{{post.title}}</a>
+                    </div>
+                </div>
             </div>
-            <div class="uk-form-row uk-text-small">
-                <label class="uk-float-left"><input id="remember" type="checkbox"> 记住我</label>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
 <script>
 </script>
 </body>

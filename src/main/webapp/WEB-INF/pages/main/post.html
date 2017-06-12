@@ -48,20 +48,31 @@
 			});
 		}
 
-        function _postNewReply() {
-            var url = getUrl();
-            var newReply = $('#new-reply').val();
-            var content = {content:newReply};
-            $.post(url,content,function (result) {
-                    if(result.resultCode=="0") {
-                        _getData();
-                        location.reload();
-                    }else if(result.resultCode=="1"){
-						alert(result.msg);
-						location.assign('/user/signin');
-                    }else alert(result.msg);
-            });
+		function _initReplyBox(data) {
+            var replyBox = new Vue({
+                el:"#reply_box",
+                data:{
+                    user:data.user
+                },
+                methods:{
+                    postNewReply: function () {
+                        var url = getUrl();
+                        var newReply = $('#new-reply').val();
+                        var content = {content:newReply};
+                        $.post(url,content,function (result) {
+                            if(result.resultCode=="0") {
+                                _getData();
+                                location.reload();
+                            }else if(result.resultCode=="1"){
+                                alert(result.msg);
+                                location.assign('/user/signin');
+                            }else alert(result.msg);
+                        });
+                    }
+                }
+            })
         }
+
 
 		function _getData() {
 			var url = getUrl();
@@ -72,7 +83,7 @@
 		}
 		$(function () {
             _getData();
-            _getUserData();
+            _getUserData(false,true);
 			_getNewPosts()
         })
 	</script>
@@ -85,7 +96,7 @@
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signup">注册</a>
                 <a class="uk-link-muted uk-contrast " v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a>
                 <a class="uk-link-muted uk-contrast " v-if="user == null" href="/user/signin">登录</a>
-                <a onclick="_loginout()" class="uk-link-muted uk-contrast " v-else >登出</a>
+                <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
             </div>
             <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
             <div id="bianbian" class="uk-offcanvas">
@@ -140,12 +151,13 @@
 			</div>
 			</div>
 			<ul id="M-box2" class="uk-pagination"></ul>
-			<div id="comment-box" class="uk-block uk-padding-top-remove">
+			<div id="reply_box" class="uk-block uk-padding-top-remove">
 				<div class="uk-panel uk-panel-box uk-panel-header">
 					<h5>发表回复:</h5>
 					<div class="uk-form-rows">
 						<textarea  id="new-reply" rows="5" style="width: 100%;overflow: auto;  word-break: break-all; "></textarea>
-						<button id="new-reply-btn" onclick="_postNewReply()" class="uk-button uk-button-primary uk-button-middle">回复</button>
+						<button v-if="user!=null" id="new-reply-btn" v-on:click="postNewReply" class="uk-button uk-button-primary uk-button-middle">回复</button>
+                        <button v-else class="uk-button uk-button-middle"><a href="/user/signin">请先登录</a></button>
 					</div>
 				</div>
 			</div>
