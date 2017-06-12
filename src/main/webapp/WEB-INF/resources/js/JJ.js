@@ -17,7 +17,7 @@ function _initUserInfo(data) {
     })
 }
 
-function _getUserData(neww,user) {
+function _getUserData(user,reply) {
     userId = Cookies.get("userId");
     var data={ user:null};
     if(userId !=null){
@@ -25,14 +25,14 @@ function _getUserData(neww,user) {
         $.get(url,function (data) {
             _initHeader(data);
             _initUserInfo(data);
-            if(neww == true) _checkSignin(data);
             if(user == true) _initUser(data);
+            if(reply == true) _initReplyBox(data);
         });
     }else {
         _initHeader(data);
         _initUserInfo(data);
-        if(neww == true) _checkSignin(data);
         if(user == true) _initUser(data);
+        if(reply == true) _initReplyBox(data);
     }
 }
 
