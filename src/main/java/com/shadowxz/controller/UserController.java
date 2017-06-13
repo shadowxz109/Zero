@@ -148,8 +148,12 @@ public class UserController {
     public @ResponseBody Map<String,Object> getUserInfo(@PathVariable int urlUserId,HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
-        result.put("resultCode",Constant.RETURN_CODE_SUCC);
-        result.put("user",userService.findUserById(userId));
+        if(userId == null){
+            result.put("resultCode",Constant.RETURN_CODE_ERR);
+        }else {
+            result.put("resultCode",Constant.RETURN_CODE_SUCC);
+            result.put("user",userService.findUserById(userId));
+        }
         return result;
     }
 
