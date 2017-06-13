@@ -26,6 +26,8 @@ public class User {
 
     private Integer state;
 
+    private String imageUrl;
+
     private Date forbidTime;
 
     private List<Post> posts;
@@ -53,7 +55,7 @@ public class User {
 
     private Integer massageNumber;
 
-    public User(Integer id, String userName, String email, Integer active, String validateCode, Integer sex, String selfIntroduce, Integer state, Date registerTime, Integer massageNumber) {
+    public User(Integer id, String userName, String email, Integer active, String validateCode, Integer sex, String selfIntroduce, Integer state, Date registerTime, Integer massageNumber,String imageUrl) {
         this.id = id;
         this.userName = userName;
         this.email = email;
@@ -64,6 +66,7 @@ public class User {
         this.state = state;
         this.registerTime = registerTime;
         this.massageNumber = massageNumber;
+        this.imageUrl = imageUrl;
     }
 
     public User(String userName, String password, String email, Integer active, String validateCode, Integer sex, String selfIntroduce, Integer state, Date registerTime, Integer massageNumber) {
@@ -173,6 +176,14 @@ public class User {
 
     public Date getForbidTime() {
         return forbidTime;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setForbidTime(Integer days) {

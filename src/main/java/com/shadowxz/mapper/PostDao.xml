@@ -9,12 +9,25 @@
       <arg column="title" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="pulish_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
       <arg column="reply_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
-      <arg column="content" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="read_number" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="reply_number" jdbcType="INTEGER" javaType="java.lang.Integer" />
     </constructor>
   </resultMap>
-  <resultMap id="ResultMapWithBLOBs" type="Post" >
+  <resultMap id="ResultMap" type="Post" >
+    <result property="id" column="id" />
+    <result property="sectionId" column="section_id" />
+    <result property="userId" column="user_id" />
+    <result property="title" column="title" />
+    <result property="pulishTime" column="pulish_time" />
+    <result property="replyTime" column="reply_time" />
+    <result property="readNumber" column="read_number" />
+    <result property="replyNumber" column="reply_number" />
+    <result property="content" column="content" />
+    <association property="postUser" javaType="User">
+      <result property="userName" column="post_user_name" />
+    </association>
+  </resultMap>
+  <resultMap id="ResultMapWithReplies" type="Post" >
     <result property="id" column="id" />
     <result property="sectionId" column="section_id" />
     <result property="userId" column="user_id" />
@@ -26,6 +39,7 @@
     <result property="content" column="content" />
     <association property="postUser" javaType="User">
         <result property="userName" column="post_user_name" />
+        <result property="imageUrl" column="post_user_image_url" />
     </association>
     <collection property="replies" ofType="Reply">
         <result property="id" column="reply_id" />
@@ -34,6 +48,7 @@
         <result property="replyTime" column="reply_reply_time" />
         <association property="replyUser" javaType="User">
             <result property="userName" column="reply_user_name" />
+            <result property="imageUrl" column="reply_user_image_url" />
         </association>
     </collection>
   </resultMap>
@@ -41,7 +56,7 @@
     id, section_id, user_id, title, pulish_time ,content ,reply_time, read_number, reply_number
   </sql>
 
-  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.util.Map" >
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithReplies" parameterType="java.util.Map" >
     select P.id AS id,
       P.section_id AS section_id,
       P.user_id AS user_id,
@@ -52,11 +67,13 @@
       P.reply_number AS reply_number,
       P.content AS content,
       U1.user_name AS post_user_name,
+      U1.image_url AS post_user_image_url,
       R1.id AS reply_id,
       R1.content AS reply_content,
       R1.reply_time AS reply_reply_time,
       R1.user_id AS reply_user_id,
-      U2.user_name AS reply_user_name
+      U2.user_name AS reply_user_name,
+      U2.image_url AS reply_user_image_url
 	  FROM post P
          LEFT OUTER JOIN user U1 ON P.user_id = U1.id
          LEFT OUTER JOIN reply R1 ON R1.post_id = P.id
@@ -65,19 +82,37 @@
     LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 
-  <select id="selectAllPosts" resultMap="BaseResultMap" parameterType="int">
-    SELECT
-    <include refid="Base_Column_List" />
-    FROM post
-    ORDER BY id DESC
+  <select id="selectAllPosts" resultMap="ResultMap" parameterType="int">
+    SELECT P.id AS id,
+    P.section_id AS section_id,
+    P.user_id AS user_id,
+    P.title AS title,
+    P.pulish_time AS pulish_time,
+    P.reply_time AS reply_time,
+    P.read_number AS read_number,
+    P.reply_number AS reply_number,
+    P.content AS content,
+    U.user_name AS post_user_name
+    FROM post P
+      LEFT OUTER JOIN user U ON P.user_id = U.id
+    ORDER BY P.id DESC
     LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 
-  <select id="selectBaseByPrimaryKey" resultMap="BaseResultMap" parameterType="int">
-    SELECT
-    <include refid="Base_Column_List" />
-    FROM post
-    WHERE id = #{id,jdbcType=INTEGER}
+  <select id="selectBaseByPrimaryKey" resultMap="ResultMap" parameterType="int">
+    SELECT P.id AS id,
+    P.section_id AS section_id,
+    P.user_id AS user_id,
+    P.title AS title,
+    P.pulish_time AS pulish_time,
+    P.reply_time AS reply_time,
+    P.read_number AS read_number,
+    P.reply_number AS reply_number,
+    P.content AS content,
+    U.user_name AS post_user_name
+    FROM post P
+    LEFT OUTER JOIN user U ON P.user_id = U.id
+    WHERE P.id = #{id,jdbcType=INTEGER}
   </select>
 
   <select id="selectNewPosts" resultMap="BaseResultMap">
@@ -88,11 +123,20 @@
     LIMIT 0,5
   </select>
 
-  <select id="selectPostsBySectionId" resultMap="BaseResultMap" parameterType="java.util.Map">
-    SELECT
-    <include refid="Base_Column_List" />
-    FROM post
-    WHERE section_id = #{sectionId,jdbcType=INTEGER}
+  <select id="selectPostsBySectionId" resultMap="ResultMap" parameterType="java.util.Map">
+    SELECT P.id AS id,
+    P.section_id AS section_id,
+      P.user_id AS user_id,
+      P.title AS title,
+      P.pulish_time AS pulish_time,
+      P.reply_time AS reply_time,
+      P.read_number AS read_number,
+      P.reply_number AS reply_number,
+      P.content AS content,
+    U.user_name AS post_user_name
+    FROM post P
+    LEFT OUTER JOIN user U ON P.user_id = U.id
+    WHERE P.section_id = #{sectionId,jdbcType=INTEGER}
     LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 

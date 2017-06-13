@@ -13,6 +13,7 @@
       <arg column="state" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="register_time" jdbcType="DATE" javaType="java.util.Date" />
       <arg column="massage_number" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="image_url" jdbcType="VARCHAR" javaType="java.lang.String" />
     </constructor>
   </resultMap>
   <resultMap id="ResultMapForLogin" type="User" >
@@ -29,6 +30,7 @@
     <result property="sex" column="sex" />
     <result property="selfIntroduce" column="self_introduce" />
     <result property="registerTime" column="register_time" />
+    <result property="imageUrl" column="image_url" />
     <collection property="posts" ofType="Post">
       <result property="id" column="post_id" />
       <result property="title" column="post_title" />
@@ -45,7 +47,7 @@
     </collection>
   </resultMap>
   <sql id="Base_Column_List" >
-    id, user_name, email, active, validateCode, sex, self_introduce, state, register_time, massage_number
+    id, user_name, email, active, validateCode, sex, self_introduce, state, register_time, massage_number,image_url
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -56,7 +58,7 @@
 
   <select id="selectDetailUserById" resultMap="DetailResultMap" parameterType="java.lang.Integer">
     SELECT
-    user_name,email,sex,self_introduce,register_time,
+    user_name,email,sex,self_introduce,register_time,image_url,
     U.id AS id,
     P1.id AS post_id,
     P1.title AS post_title,
@@ -147,6 +149,9 @@
       <if test="massageNumber != null" >
         massage_number,
       </if>
+      <if test="imageUrl != null" >
+        image_url,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -172,6 +177,9 @@
       </if>
       <if test="massageNumber != null" >
         #{massageNumber,jdbcType=INTEGER},
+      </if>
+      <if test="imageUrl != null" >
+        #{imageUrl,jdbcType=VARCHAR}
       </if>
     </trim>
   </insert>
@@ -205,6 +213,9 @@
         <if test="active != null" >
             active = #{active,jdbcType=INTEGER},
         </if>
+      <if test="imageUrl != null" >
+        image_url = #{imageUrl,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -218,7 +229,8 @@
       self_introduce = #{selfIntroduce,jdbcType=VARCHAR},
       state = #{state,jdbcType=INTEGER},
       register_time = #{registerTime,jdbcType=DATE},
-      massage_number = #{massageNumber,jdbcType=INTEGER}
+      massage_number = #{massageNumber,jdbcType=INTEGER},
+      image_url = #{imageUrl,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

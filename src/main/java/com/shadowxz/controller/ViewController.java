@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,12 +35,13 @@ public class ViewController {
     }
 
     @RequestMapping(value = "/user/signin",method = RequestMethod.GET)
-    public ModelAndView getUserLoginView(HttpServletRequest request){
+    public ModelAndView getUserLoginView(HttpServletRequest request, HttpServletResponse response)throws IOException{
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         if(userId == null){
             return new ModelAndView("main/signin");
         }else {
-            return new ModelAndView("main/index");
+            response.sendRedirect("/");
+            return null;
         }
     }
     

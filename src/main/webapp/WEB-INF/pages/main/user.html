@@ -3,17 +3,18 @@
 <head>
     <title>用户信息</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="/resources/css/uikit.css" />
-    <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
-    <link rel="stylesheet" href="/resources/css/components/form-select.css">
-    <script src="/resources/js/jquery-3.0.0.min.js"></script>
-    <script src="/resources/js/md5.js"></script>
-    <script src="/resources/js/json.min.js"></script>
-    <script src="/resources/js/uikit.js"></script>
-    <script src="/resources/js/components/form-select.js"></script>
-    <script src="/resources/js/vue.js"></script>
-    <script src="/resources/js/JJ.js"></script>
-    <script src="/resources/js/js.cookie.js"></script>
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/uikit.css" />
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/uikit.almost-flat.css" />
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/form-select.css">
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/form-file.css">
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/jquery-3.0.0.min.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/md5.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/json.min.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/uikit.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/vue.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/main.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/js.cookie.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/ajaxfileupload.js"></script>
     <script>
         $(function () {
             function _initMain(data) {
@@ -24,7 +25,8 @@
                         posts: data.user.posts,
                         replies: data.user.replies,
                         sex_modify: false,
-                        selfIntro_modify: false
+                        selfIntro_modify: false,
+                        user_image_url: data.user.imageUrl
                     },
                     methods:{
                         deletePost: function (event) {
@@ -80,6 +82,19 @@
                                     location.assign("/user/signin");
                                 }
                             })
+                        },
+                        fileUpload:function () {
+                            var uname = "shadow";
+                            $.ajaxFileUpload({
+                                url:'/api/user/image',
+                                secureuri:false,
+                                fileElementId:'userImage',
+                                dataType:'json',
+                                success:function(result, status){
+                                    if(result.resultCode ==  "0")
+                                        main.user_image_url = result.key;
+                                }
+                            });
                         }
                     }
                 });
@@ -120,15 +135,13 @@
                 $(".delete-reply").addClass("uk-hidden");
                 $("#sex-modify-btn").addClass("uk-hidden");
                 $("#self-introduce-modify").addClass("uk-hidden");
+                $("#show-image").removeAttr("title");
             }
             else {
                 $(".delete-post").removeClass("uk-hidden");
                 $(".delete-reply").removeClass("uk-hidden");
                 $("#sex-modify-btn").removeClass("uk-hidden");
                 $("#self-introduce-modify").removeClass("uk-hidden");
-                $("#user-image").mouseover(function () {
-                    
-                })
             }
         }
     </script>
@@ -144,13 +157,6 @@
                 <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
             </div>
             <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
-            <div id="bianbian" class="uk-offcanvas">
-                <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">注册</a></div>
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="/">登录</a></div>
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">我的</a></div>
-                </div>
-            </div>
             <h2 class="uk-contrast"><a href="/">Zero</a></h2>
         </div>
     </div>
@@ -161,7 +167,18 @@
                     <div class="uk-comment uk-comment-primary">
                         <header class="uk-comment-header">
                             <div id="user-image" class="uk-comment-avatar" style="width: 100px;height: 100px;overflow: hidden;">
-                                <img src="/resources/img/3.jpg">
+                                <div class="item">
+                                    <img id="show-image" v-bind:src="'http://ordugxhfu.bkt.clouddn.com/img/user/'+user_image_url+'.jpg'" title="点击修改头像" data-uk-modal="{target:'#update-modal'}">
+                                </div>
+                            </div>
+                            <div id="update-modal" class="uk-modal">
+                                <div class="uk-modal-dialog">
+                                    <a class="uk-modal-close uk-close"></a>
+                                    <div class="uk-form-file"><button class="uk-button">选择图片</button>
+                                        <input type="file"><input type="file" id="userImage" name="userImage">
+                                    </div>
+                                    <button class="uk-button uk-modal-close" style="float: right" v-on:click="fileUpload">确认上传</button>
+                                </div>
                             </div>
                             <div><h4>{{user.userName}}</h4></div>
                             <div>

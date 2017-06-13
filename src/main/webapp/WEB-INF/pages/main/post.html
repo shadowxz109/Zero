@@ -3,19 +3,19 @@
 <head>
 	<title>帖子信息</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" href="/resources/css/uikit.css" />
-	<link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
-	<script src="/resources/js/jquery-3.0.0.min.js"></script>
-	<script src="/resources/js/components/pagination.js"></script>
-	<script src="/resources/js/jquery.md5.js"></script>
-	<script src="/resources/js/json.min.js"></script>
-	<script src="/resources/js/uikit.js"></script>
-    <script src="/resources/js/vue.js"></script>
-	<script src="/resources/js/JJ.js"></script>
-    <script src="/resources/js/js.cookie.js"></script>
-	<script src="/resources/js/jquery.pagination.js"></script>
+	<link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/uikit.css" />
+	<link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/uikit.almost-flat.css" />
+	<script src="http://orhfi6yv3.bkt.clouddn.com/js/jquery-3.0.0.min.js"></script>
+	<script src="http://orhfi6yv3.bkt.clouddn.com/js/pagination.js"></script>
+	<script src="http://orhfi6yv3.bkt.clouddn.com/js/jquery.md5.js"></script>
+	<script src="http://orhfi6yv3.bkt.clouddn.com/js/json.min.js"></script>
+	<script src="http://orhfi6yv3.bkt.clouddn.com/js/uikit.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/vue.js"></script>
+	<script src="http://orhfi6yv3.bkt.clouddn.com/js/main.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/js.cookie.js"></script>
+	<script src="http://orhfi6yv3.bkt.clouddn.com/js/jquery.pagination.js"></script>
 	<script>
-        function getUrl() {
+        function _getUrl() {
             var url = location.pathname;
             url = '/api'+ url;
             return url;
@@ -42,8 +42,7 @@
 				data: {
 					post: data.post,
 					replies: data.post.replies,
-					post_user: data.post.user,
-                    user: data.user
+					post_user: data.post.user
 				}
 			});
 		}
@@ -56,7 +55,7 @@
                 },
                 methods:{
                     postNewReply: function () {
-                        var url = getUrl();
+                        var url = _getUrl();
                         var newReply = $('#new-reply').val();
                         var content = {content:newReply};
                         $.post(url,content,function (result) {
@@ -73,9 +72,8 @@
             })
         }
 
-
 		function _getData() {
-			var url = getUrl();
+			var url = _getUrl();
 			_initPagination();
 			$.get(url,function (data) {
 				_initMain(data);
@@ -99,13 +97,6 @@
                 <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
             </div>
             <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
-            <div id="bianbian" class="uk-offcanvas">
-                <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">注册</a></div>
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="/">登录</a></div>
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">我的</a></div>
-                </div>
-            </div>
             <h2 class="uk-contrast"><a href="/">Zero</a></h2>
         </div>
     </div>
@@ -117,7 +108,7 @@
 			        <div class="uk-comment uk-comment-primary">
 			  	    	<header class="uk-comment-header">
 					    	<div class="uk-border-circle uk-comment-avatar" style="width: 50px;height: 50px;overflow: hidden;">
-					  			<img src="/resources/img/3.jpg">
+					  			<img v-bind:src="'http://ordugxhfu.bkt.clouddn.com/img/user/'+post_user.imageUrl+'.jpg'">
 							</div>
 					    	<h4 class="uk-comment-title">{{post.title}}</h4>
 							<div class="uk-comment-meta"><a v-bind:href="'http://localhost:8080/user/'+post.userId">{{post_user.userName}}</a>|{{post.pulishTime}}</div>
@@ -137,7 +128,7 @@
 							<article class="uk-comment">
 						    	<header class="uk-comment-header">
 						        	<div class="uk-border-circle uk-comment-avatar" style="width: 50px;height: 50px;overflow: hidden;">
-						            	<img class="" src="/resources/img/1.jpg" alt="">
+						            	<img class="" v-bind:src="'http://ordugxhfu.bkt.clouddn.com/img/user/'+reply.user.imageUrl+'.jpg'" >
 						        	</div>
 						        	<h4 class="uk-comment-title"><a v-bind:href="'/user/'+reply.userId">{{reply.user.userName}}</a></h4>
 						        	<div class="uk-comment-meta">{{reply.replyTime}}</div>

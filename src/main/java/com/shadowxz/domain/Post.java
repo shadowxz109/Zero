@@ -30,14 +30,13 @@ public class Post {
 
     private User postUser;
 
-    public Post(Integer id, Integer sectionId, Integer userId, String title, Date pulishTime, Date replyTime, String content,Integer readNumber, Integer replyNumber) {
+    public Post(Integer id, Integer sectionId, Integer userId, String title, Date pulishTime, Date replyTime,Integer readNumber, Integer replyNumber) {
         this.id = id;
         this.sectionId = sectionId;
         this.userId = userId;
         this.title = title;
         this.pulishTime = pulishTime;
         this.replyTime = replyTime;
-        this.content = content;
         this.readNumber = readNumber;
         this.replyNumber = replyNumber;
     }

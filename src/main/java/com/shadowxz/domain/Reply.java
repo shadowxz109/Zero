@@ -47,11 +47,12 @@ public class Reply {
         this.content = content;
     }
 
-    public Reply(Integer postId, Integer userId, Date replyTime, String content) {
+    public Reply(Integer postId, Integer userId, Date replyTime, String content,Integer state) {
         this.postId = postId;
         this.userId = userId;
         this.replyTime = replyTime;
         this.content = content;
+        this.state = state;
     }
 
     public Reply() {

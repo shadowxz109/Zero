@@ -7,11 +7,12 @@ import com.shadowxz.domain.User;
 import com.shadowxz.service.PostService;
 import com.shadowxz.service.ReplyService;
 import com.shadowxz.service.UserService;
+import com.shadowxz.util.ImageUtil;
 import com.shadowxz.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -73,64 +74,36 @@ public class UserController {
         return result;
     }
 
-    @RequestMapping(value = "/password/{urlUserId}",method = RequestMethod.PUT)
+    @RequestMapping(value = "/password",method = RequestMethod.PUT)
     public @ResponseBody Map<String,Object> putPassword(@RequestParam String oldPassword,@RequestParam String newPassword,
-                                                           HttpServletRequest request,@PathVariable int urlUserId) {
+                                                           HttpServletRequest request) {
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String, Object> result = new HashMap<>();
-        if (userId == urlUserId) {
-            User user = userService.findUserById(userId);
-            String userName = user.getUserName();
-            if (oldPassword.equals(userService.findPasswordByUserName(userName))) {
-                user.setPassword(newPassword);
-                userService.updateUser(user);
-                result.put("resultCode", Constant.RETURN_CODE_SUCC);
-                result.put("msg", "修改成功");
-            } else {
-                result.put("resultCode", Constant.RETURN_CODE_ERR);
-                result.put("msg", "原密码不正确");
-            }
+        User user = userService.findUserById(userId);
+        String userName = user.getUserName();
+        if (oldPassword.equals(userService.findPasswordByUserName(userName))) {
+            user.setPassword(newPassword);
+            userService.updateUser(user);
+            result.put("resultCode", Constant.RETURN_CODE_SUCC);
+            result.put("msg", "修改成功");
         } else {
             result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg", "你不能修改他人的密码");
+            result.put("msg", "原密码不正确");
         }
         return result;
     }
 
-    /*@RequestMapping(value = "/email/{urlUserId}",method = RequestMethod.PUT)
-    public @ResponseBody Map<String,Object> sendEmail(HttpServletRequest request,@PathVariable int urlUserId) {
+    @RequestMapping(value = "/email",method = RequestMethod.PUT)
+    public @ResponseBody Map<String,Object> sendEmail(HttpServletRequest request) {
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String, Object> result = new HashMap<>();
-        if (userId == null) {
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg", "请先登录");
-        } else if (userId == urlUserId) {
-            User user = userService.findUserById(userId);
-            userService.sendEmail(user);
-        } else {
-            result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg", "你不能激活他人的邮箱");
-        }
+        User user = userService.findUserById(userId);
+        userService.sendEmail(user);
+        result.put("resultCode",Constant.RETURN_CODE_SUCC);
+        result.put("msg","激活邮件已发到邮箱，请前去验证");
         return result;
-    }*/
-
-    //还有点问题
-    @RequestMapping(value = "/userSetting",method = RequestMethod.GET)
-    public ModelAndView getUserSettingView(HttpServletRequest request, HttpServletResponse response){
-        Integer userId = (Integer) request.getSession().getAttribute("userId");
-        if(userId == null){
-            return new ModelAndView("main/signin");
-        }
-        else {
-            User user = userService.findUserById(userId);
-            Map<String,Object> map = new HashMap<>();
-            map.put("userName",user.getUserName());
-            map.put("email",user.getEmail());
-            map.put("sex",user.getSex());
-            map.put("selfIntroduce",user.getSelfIntroduce());
-            return new ModelAndView("main/userSetting",map);
-        }
     }
+
 
     @RequestMapping(value = "/session",method = RequestMethod.POST)
     public @ResponseBody Map<String,Object> postUserLogin(@RequestParam String userName, @RequestParam String password,
@@ -175,41 +148,16 @@ public class UserController {
     public @ResponseBody Map<String,Object> getUserInfo(@PathVariable int urlUserId,HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
-        if(userId == null){
-            result.put("resultCode",Constant.RETURN_CODE_ERR);
-        }else {
-            result.put("resultCode",Constant.RETURN_CODE_SUCC);
-            result.put("user",userService.findUserById(userId));
-        }
+        result.put("resultCode",Constant.RETURN_CODE_SUCC);
+        result.put("user",userService.findUserById(userId));
         return result;
     }
 
     @RequestMapping(value = "/{urlUserId}",method = RequestMethod.GET)
     public @ResponseBody Map<String,Object> getUserDetail(@PathVariable int urlUserId,HttpServletRequest request){
-        //Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
         result.put("resultCode",Constant.RETURN_CODE_SUCC);
         result.put("user",userService.findUserDetailById(urlUserId));
-        return result;
-    }
-
-    @RequestMapping(value = "/{urlUserId}",method = RequestMethod.PUT)
-    public @ResponseBody Map<String,Object> putUpdate(@PathVariable int urlUserId,@RequestParam String email,@RequestParam int sex,
-                                                      @RequestParam String selfIntroduce,HttpServletRequest request){
-        Integer userId = (Integer) request.getSession().getAttribute("userId");
-        Map<String,Object> result= new HashMap<>();
-        if(userId != urlUserId){
-            result.put("resultCode",Constant.RETURN_CODE_ERR);
-            result.put("msg","不能修改他人的信息");
-        }else {
-            User user = userService.findUserById(userId);
-            user.setEmail(email);
-            user.setSex(sex);
-            user.setSelfIntroduce(selfIntroduce);
-            userService.updateUser(user);
-            result.put("resultCode",Constant.RETURN_CODE_SUCC);
-            result.put("msg","修改成功");
-        }
         return result;
     }
 
@@ -226,6 +174,47 @@ public class UserController {
         List<Reply> replies = replyService.findRepliesByUserId(userId,page);
         Map<String,Object> result = new HashMap<>();
         result.put("replies",replies);
+        return result;
+    }
+
+    @RequestMapping(value = "/sex",method = RequestMethod.POST)
+    public @ResponseBody Map<String,Object> postUserSex(HttpServletRequest request){
+        int sex = Integer.parseInt(request.getParameter("sex"));
+        Integer userId = (Integer) request.getSession().getAttribute("userId");
+        User user = userService.findUserById(userId);
+        user.setSex(sex);
+        userService.updateUser(user);
+        Map<String,Object> result = new HashMap<>();
+        result.put("resultCode",Constant.RETURN_CODE_SUCC);
+        return result;
+    }
+
+    @RequestMapping(value = "/selfIntroduce",method = RequestMethod.POST)
+    public @ResponseBody Map<String,Object> postUserSelfIntroduce(HttpServletRequest request){
+        String selfIntroduce = request.getParameter("selfIntroduce");
+        Integer userId = (Integer) request.getSession().getAttribute("userId");
+        User user = userService.findUserById(userId);
+        user.setSelfIntroduce(selfIntroduce);
+        userService.updateUser(user);
+        Map<String,Object> result = new HashMap<>();
+        result.put("resultCode",Constant.RETURN_CODE_SUCC);
+        return result;
+    }
+
+    @RequestMapping(value = "/image",method = RequestMethod.POST)
+    public @ResponseBody Map<String,Object> uploadUserImage(@RequestParam(value="userImage")MultipartFile image,HttpServletRequest request) throws Exception{
+        Integer userId = (Integer) request.getSession().getAttribute("userId");
+        User user = userService.findUserById(userId);
+        String key = ImageUtil.saveImg(image, "user");
+        String url = ImageUtil.getImg(key);
+        int begin = url.lastIndexOf("%2F");
+        int end = url.indexOf(".");
+        url = url.substring(begin+3,end);
+        user.setImageUrl(url);
+        userService.updateUser(user);
+        Map<String,Object> result = new HashMap<>();
+        result.put("resultCode",Constant.RETURN_CODE_SUCC);
+        result.put("key",url);
         return result;
     }
 }

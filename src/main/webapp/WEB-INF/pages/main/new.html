@@ -2,24 +2,24 @@
 <head>
     <title>创建新帖子</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="/resources/css/uikit.css" />
-    <link rel="stylesheet" href="/resources/css/uikit.almost-flat.css" />
-    <link rel="stylesheet" href="/resources/css/components/form-select.css">
-    <script src="/resources/js/jquery-3.0.0.min.js"></script>
-    <script src="/resources/js/md5.js"></script>
-    <script src="/resources/js/json.min.js"></script>
-    <script src="/resources/js/uikit.js"></script>
-    <script src="/resources/js/components/form-select.js"></script>
-    <script src="/resources/js/vue.js"></script>
-    <script src="/resources/js/JJ.js"></script>
-    <script src="/resources/js/js.cookie.js"></script>
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/uikit.min.css" />
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/uikit.almost-flat.css" />
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/form-select.css">
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/jquery-3.0.0.min.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/md5.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/json.min.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/uikit.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/components/form-select.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/vue.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/main.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/js.cookie.js"></script>
     <!-- HTML 编辑器的 CSS 与 JavaScript -->
-    <link href="/resources/css/hybrid.css" rel="stylesheet"/>
-    <link href="/resources/css/editor.css" rel="stylesheet">
-    <script src="/resources/js/json.min.js"></script>
-    <script src="/resources/js/highlight.pack.js"></script>
-    <script src="/resources/js/editor.js"></script>
-    <script src="/resources/js/marked.js"></script>
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/hybrid.css" />
+    <link rel="stylesheet" href="http://orhfi6yv3.bkt.clouddn.com/css/editor.css" >
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/json.min.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/highlight.pack.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/editor.js"></script>
+    <script src="http://orhfi6yv3.bkt.clouddn.com/js/marked.js"></script>
     <script>
         $(function () {
             var editor = new Editor();
@@ -87,11 +87,12 @@
                 <a class="uk-link-muted uk-contrast " v-else onclick="_loginout()" >登出</a>
             </div>
             <a href="/" class="uk-visible-small uk-float-right uk-link-muted uk-contrast" data-uk-offcanvas><i class="uk-icon-bars"></i></a>
-            <div id="bianbian" class="uk-offcanvas">
+            <div id="small-header" class="uk-offcanvas">
                 <div class="uk-offcanvas-bar uk-offcanvas-bar-flip">
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">注册</a></div>
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="/">登录</a></div>
-                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" href="">我的</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" v-if="user == null" href="/user/signup">注册</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" v-else v-bind:href="'/user/'+user.id">{{user.userName}}</a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" v-if="user == null" href="/user/signin">登录></a></div>
+                    <div class="uk-panel"><a class="uk-link-muted uk-contrast" v-else onclick="_loginout()" >登出</a></div>
                 </div>
             </div>
             <h2 class="uk-contrast"><a href="/">Zero</a></h2>

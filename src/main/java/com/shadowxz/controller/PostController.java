@@ -3,15 +3,12 @@ package com.shadowxz.controller;
 import com.shadowxz.domain.Constant;
 import com.shadowxz.domain.Post;
 import com.shadowxz.domain.Reply;
-import com.shadowxz.domain.User;
 import com.shadowxz.service.PostService;
 import com.shadowxz.service.ReplyService;
 import com.shadowxz.service.UserService;
-import com.shadowxz.util.Forbid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -36,28 +33,12 @@ public class PostController {
     @Autowired
     ReplyService replyService;
 
-    @RequestMapping(value = "/view/addPost",method = RequestMethod.GET)
-    public ModelAndView addPostView(){return new ModelAndView("main/new");
-    }
-
-    @RequestMapping(value = "/view/postInfo",method = RequestMethod.GET)
-    public ModelAndView getPostInfoView() {
-
-        return new ModelAndView("main/postInfo");
-    }
 
     @RequestMapping(value ="/{postId}/replies/page/{page}",method = RequestMethod.POST)
     public @ResponseBody Map<String,Object> postReply(@PathVariable int postId, @RequestParam String content, HttpServletRequest request){
         Integer userId = (Integer) request.getSession().getAttribute("userId");
         Map<String,Object> result = new HashMap<>();
-        User user = userService.findUserById(userId);
-        if(user.getForbidTime() != null) {
-            Date now = new Date();
-            if (now.before(user.getForbidTime())) {
-                Forbid.checkForbid(user, result);
-            }
-        }
-        Reply reply = new Reply(postId, userId, new Date(),content);
+        Reply reply = new Reply(postId, userId, new Date(),content,0);
         replyService.addReply(reply);
         result.put("resultCode", Constant.RETURN_CODE_SUCC);
         result.put("msg", "回复成功");
