@@ -3,6 +3,7 @@ package com.shadowxz.domain;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
+import java.util.List;
 
 public class Reply {
     private Integer id;
@@ -18,13 +19,7 @@ public class Reply {
 
     private String content;
 
-    public User getUser() {
-        return replyUser;
-    }
-
-    public void setUser(User user) {
-        this.replyUser = user;
-    }
+    private List<Dialogue> dialogues;
 
     private  User replyUser;
 
@@ -105,6 +100,22 @@ public class Reply {
 
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
+    }
+
+    public List<Dialogue> getDialogues() {
+        return dialogues;
+    }
+
+    public void setDialogues(List<Dialogue> dialogues) {
+        this.dialogues = dialogues;
+    }
+
+    public User getUser() {
+        return replyUser;
+    }
+
+    public void setUser(User user) {
+        this.replyUser = user;
     }
 
     public String toString(){

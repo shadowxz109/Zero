@@ -72,6 +72,13 @@
     LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 
+  <select id="countRepliesNumberByPostId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    SELECT
+    COUNT(*)
+    FROM reply
+    WHERE post_id = #{postId,jdbcType=INTEGER}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="int" >
     delete from reply
     where id = #{id,jdbcType=INTEGER}

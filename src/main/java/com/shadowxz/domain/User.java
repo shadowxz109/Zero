@@ -69,7 +69,7 @@ public class User {
         this.imageUrl = imageUrl;
     }
 
-    public User(String userName, String password, String email, Integer active, String validateCode, Integer sex, String selfIntroduce, Integer state, Date registerTime, Integer massageNumber) {
+    public User(String userName, String password, String email, Integer active, String validateCode, Integer sex, String selfIntroduce, Integer state, Date registerTime, Integer massageNumber,String imageUrl) {
         this.userName = userName;
         this.password = password;
         this.email = email;
@@ -80,6 +80,7 @@ public class User {
         this.state = state;
         this.registerTime = registerTime;
         this.massageNumber = massageNumber;
+        this.imageUrl = imageUrl;
     }
 
     public User() {

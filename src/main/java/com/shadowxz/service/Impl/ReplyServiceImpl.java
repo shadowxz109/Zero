@@ -5,6 +5,7 @@ import com.shadowxz.domain.Post;
 import com.shadowxz.domain.Reply;
 import com.shadowxz.service.PostService;
 import com.shadowxz.service.ReplyService;
+import com.shadowxz.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +27,16 @@ public class ReplyServiceImpl implements ReplyService {
     @Autowired
     PostService postService;
 
+    @Autowired
+    UserService userService;
+
 
     public void addReply(Reply reply) {
         int postId = reply.getPostId();
-        postService.increaseReplyNumberById(postId);
+        postService.increaseReplyNumberById(postId,1);
         Post post = postService.findBasePostById(postId);
+        int userId = post.getUserId();
+        userService.updateMessageNumberById(userId,1);
         post.setReplyTime(new Date());
         postService.updatePost(post);
         replyDao.insert(reply);
@@ -42,7 +48,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     public void deleteReply(Reply reply){
         int postId = reply.getPostId();
-        postService.decreaseReplyNumberById(postId);
+        postService.decreaseReplyNumberById(postId,1);
         int replyId = reply.getId();
         replyDao.deleteByPrimaryKey(replyId);
     }
@@ -70,4 +76,10 @@ public class ReplyServiceImpl implements ReplyService {
     }
 
     public List<Reply> findAllReplies(int page){return replyDao.selectAllRepies((page-1)*10);}
+
+
+    public int findReplyPageCountByPostId(int postId){
+        int repliesNum = replyDao.countRepliesNumberByPostId(postId);
+        return ((repliesNum-1)/10+1);
+    }
 }

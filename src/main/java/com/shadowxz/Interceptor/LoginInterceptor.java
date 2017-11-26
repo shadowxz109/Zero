@@ -21,7 +21,6 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             Integer userId = (Integer) request.getSession().getAttribute("userId");
             if (userId == null){
                 response.sendRedirect("/unlogin");
-                System.out.println("userIdfd:"+userId);
                 return false;
             }
             return true;

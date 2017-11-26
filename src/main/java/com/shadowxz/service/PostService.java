@@ -27,12 +27,14 @@ public interface PostService {
 
     List<Post> findPostsByUserId(int userId,int page);
 
-    void increaseReplyNumberById(int id);
+    void increaseReplyNumberById(int id,int number);
 
-    void decreaseReplyNumberById(int id);
+    void decreaseReplyNumberById(int id,int number);
 
-    void increaseReadNumberById(int id);
+    void increaseReadNumberById(int id,int number);
 
     List<Post> findNewPosts();
+
+    int findPostsPageCountBySectionId(int sectionId);
 
 }

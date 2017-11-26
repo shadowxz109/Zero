@@ -1,7 +1,9 @@
 package com.shadowxz.service.Impl;
 
+import com.shadowxz.dao.PostDao;
 import com.shadowxz.dao.UserDao;
 import com.shadowxz.domain.Constant;
+import com.shadowxz.domain.Post;
 import com.shadowxz.domain.User;
 import com.shadowxz.service.UserService;
 import com.shadowxz.util.SendEmail;
@@ -18,6 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    PostDao postDao;
 
     public void sendEmail(User user){
         String email = user.getEmail();
@@ -36,8 +41,8 @@ public class UserServiceImpl implements UserService {
     }
 
     public void addUser(User user) {
-        sendEmail(user);
         userDao.insert(user);
+        sendEmail(user);
     }
 
     public void updateUser(User user) {
@@ -73,7 +78,7 @@ public class UserServiceImpl implements UserService {
         User user = userDao.selectByEmail(email);
         if(user == null){
             result.put("resultCode", Constant.RETURN_CODE_ERR);
-            result.put("msg","该邮箱未注册");
+            result.put("msg","该");
         }else{
             if(user.getActive() == 1) {
                 result.put("resultCode", Constant.RETURN_CODE_ERR);
@@ -106,4 +111,23 @@ public class UserServiceImpl implements UserService {
     public User findUserDetailById(int id){
         return userDao.selectDetailUserById(id);
     }
+
+    public Map<String,List<Post>> findUnreadMessage(int id){
+        Map<String,List<Post>> map = new HashMap<>();
+        List<Post> replies = postDao.selectUnreadRepliesByUserId(id);
+        List<Post> dialogues = postDao.selectUnreadDialoguesByUserId(id);
+        List<Post> dialoguesP2P = postDao.selectUnreadDialoguesP2PByUserId(id);
+        map.put("replies",replies);
+        map.put("dialogues",dialogues);
+        map.put("dialoguesP2P",dialoguesP2P);
+        return map;
+    }
+
+    public void updateMessageNumberById(int id,int number){
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        map.put("number",number);
+        userDao.updateMessageNumberById(map);
+    }
+
 }

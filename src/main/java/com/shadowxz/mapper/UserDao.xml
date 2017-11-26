@@ -116,10 +116,10 @@
     <selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
       SELECT LAST_INSERT_ID() AS id
     </selectKey>
-    insert into user (user_name, email,password,sex, self_introduce, state,register_time, massage_number,active,validateCode)
+    insert into user (user_name, email,password,sex, self_introduce, state,register_time, massage_number,active,validateCode,image_url)
     values (#{userName,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},
       #{sex,jdbcType=INTEGER}, #{selfIntroduce,jdbcType=VARCHAR}, #{state,jdbcType=INTEGER},
-      #{registerTime,jdbcType=DATE}, #{massageNumber,jdbcType=INTEGER},#{active,jdbcType=INTEGER},#{validateCode,jdbcType=VARCHAR})
+      #{registerTime,jdbcType=DATE}, #{massageNumber,jdbcType=INTEGER},#{active,jdbcType=INTEGER},#{validateCode,jdbcType=VARCHAR},#{imageUrl,jdbcType=VARCHAR})
   </insert>
 
   <insert id="insertSelective" parameterType="User" >
@@ -233,4 +233,11 @@
       image_url = #{imageUrl,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <update id="updateMessageNumberById" parameterType="java.util.Map">
+    UPDATE user
+    set massage_number =#{number,jdbcType=INTEGER}
+    WHERE id = #{id,jdbcType=INTEGER}
+  </update>
+
 </mapper>

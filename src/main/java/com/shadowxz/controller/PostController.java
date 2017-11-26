@@ -65,9 +65,11 @@ public class PostController {
     public @ResponseBody Map<String,Object> getUserAllReply(@PathVariable int postId,@PathVariable int page){
         Map<String,Object> result = new HashMap<>();
         if(page == 1)
-            postService.increaseReadNumberById(postId);
+            postService.increaseReadNumberById(postId,1);
         Post post = postService.findPostById(postId,page);
         result.put("post",post);
+        Integer pageCount = replyService.findReplyPageCountByPostId(postId);
+        result.put("pageCount",pageCount);
         return result;
     }
 

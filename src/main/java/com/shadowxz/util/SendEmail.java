@@ -1,4 +1,5 @@
 package com.shadowxz.util;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -52,7 +53,9 @@ public class SendEmail {
             msg.setFrom(new InternetAddress(email));
             InternetAddress[] address = {new InternetAddress(toEmail)};
             msg.setRecipients(Message.RecipientType.TO, address);
-            msg.setSubject("账号激活邮件");
+            sun.misc.BASE64Encoder enc = new sun.misc.BASE64Encoder();
+            String subject = "账号激活邮件";
+            msg.setSubject("=?GB2312?B?"+enc.encode(subject.getBytes())+"?=");
             msg.setSentDate(new Date());
             msg.setContent(content , "text/html;charset=utf-8");
 

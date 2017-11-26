@@ -38,12 +38,14 @@ public class SectionController {
 
 
     @RequestMapping(value = "/{sectionId}/posts/page/{page}",method = RequestMethod.GET)
-    public @ResponseBody Map<String,List<?>> getPostsBySection(@PathVariable int sectionId,@PathVariable int page){
+    public @ResponseBody Map<String,Object> getPostsBySection(@PathVariable int sectionId,@PathVariable int page){
         List<Post> posts = postService.findPostsBySectionId(sectionId,page);
         List<Section> sections = sectionService.findAllSection();
-        Map<String,List<?>> result = new HashMap<>();
+        Integer pageCount = postService.findPostsPageCountBySectionId(sectionId);
+        Map<String,Object> result = new HashMap<>();
         result.put("sections",sections);
         result.put("posts",posts);
+        result.put("pageCount",pageCount);
         return result;
     }
 

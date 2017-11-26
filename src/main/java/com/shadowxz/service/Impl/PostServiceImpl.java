@@ -40,16 +40,25 @@ public class PostServiceImpl implements PostService {
         replyDao.deleteRepliesByPostId(id);
     }
 
-    public void increaseReplyNumberById(int id){
-        postDao.increaseReplyNumberById(id);
+    public void increaseReplyNumberById(int id,int number){
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        map.put("number",number);
+        postDao.increaseReplyNumberById(map);
     }
 
-    public void decreaseReplyNumberById(int id){
-        postDao.decreaseReplyNumberById(id);
+    public void decreaseReplyNumberById(int id,int number){
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        map.put("number",number);
+        postDao.decreaseReplyNumberById(map);
     }
 
-    public void increaseReadNumberById(int id){
-        postDao.increaseReadNumberById(id);
+    public void increaseReadNumberById(int id,int number){
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",id);
+        map.put("number",number);
+        postDao.increaseReadNumberById(map);
     }
 
     public Post findPostById(int id,int page) {
@@ -71,7 +80,11 @@ public class PostServiceImpl implements PostService {
         Map<String,Object> map = new HashMap<>();
         map.put("sectionId",sectionId);
         map.put("offset",(page-1)*10);
-        return postDao.selectPostsBySectionId(map);
+        List<Post> posts = postDao.selectPostsBySectionId(map);
+        if(sectionId == 1){
+            posts = findAllPosts(page);
+        }
+        return posts;
     }
 
     public List<Post> findPostsByUserId(int userId,int page) {
@@ -86,4 +99,12 @@ public class PostServiceImpl implements PostService {
     public List<Post> findNewPosts(){
         return postDao.selectNewPosts();
     };
+
+    public int findPostsPageCountBySectionId(int sectionId){
+        int postCount = 1;
+        if(sectionId == 1)
+            postCount = postDao.countPostsNumber();
+        else postCount =  postDao.countPostsNumberBySectionId(sectionId);
+        return ((postCount-1)/10+1);
+    }
 }

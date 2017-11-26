@@ -25,6 +25,7 @@
     <result property="content" column="content" />
     <association property="postUser" javaType="User">
       <result property="userName" column="post_user_name" />
+      <result property="imageUrl" column="post_user_image_url" />
     </association>
   </resultMap>
   <resultMap id="ResultMapWithReplies" type="Post" >
@@ -41,7 +42,7 @@
         <result property="userName" column="post_user_name" />
         <result property="imageUrl" column="post_user_image_url" />
     </association>
-    <collection property="replies" ofType="Reply">
+    <collection property="replies" ofType="Reply" >
         <result property="id" column="reply_id" />
         <result property="userId" column="reply_user_id" />
         <result property="content" column="reply_content" />
@@ -50,6 +51,19 @@
             <result property="userName" column="reply_user_name" />
             <result property="imageUrl" column="reply_user_image_url" />
         </association>
+        <collection property="dialogues" ofType="Dialogue" >
+          <result property="id" column="dialogue_id" />
+          <result property="sendUserId" column="send_user_id" />
+          <result property="content" column="dialogue_content" />
+          <result property="sendTime" column="dialogue_send_time" />
+          <result property="receiveUserId" column="receive_user_id" />
+          <association property="sendUser" javaType="User">
+            <result property="userName" column="send_user_name"/>
+          </association>
+          <association property="receiveUser" javaType="User">
+            <result property="userName" column="receive_user_name"/>
+          </association>
+        </collection>
     </collection>
   </resultMap>
   <sql id="Base_Column_List" >
@@ -57,7 +71,26 @@
   </sql>
 
   <select id="selectByPrimaryKey" resultMap="ResultMapWithReplies" parameterType="java.util.Map" >
-    select P.id AS id,
+    SELECT P1.id AS id,
+      P1.section_id AS section_id,
+      P1.user_id AS user_id,
+      P1.title AS title,
+      pulish_time,reply_time,read_number,reply_number,
+      P1.content AS content,
+      post_user_name,post_user_image_url,
+      P1.reply_id AS reply_id,
+      reply_content,reply_reply_time,reply_user_id,reply_user_name,reply_user_image_url,
+      D1.id AS dialogue_id,
+      D1.content AS dialogue_content,
+      D1.send_time AS dialogue_send_time,
+      D1.send_user_id AS send_user_id,
+      D1.receive_user_id AS receive_user_id,
+      U3.id AS send_user_id,
+      u3.user_name AS send_user_name,
+      U4.id AS receive_user_id,
+      u4.user_name AS receive_user_name
+	 FROM (SELECT
+	  P.id AS id,
       P.section_id AS section_id,
       P.user_id AS user_id,
       P.title AS title,
@@ -75,11 +108,14 @@
       U2.user_name AS reply_user_name,
       U2.image_url AS reply_user_image_url
 	  FROM post P
-         LEFT OUTER JOIN user U1 ON P.user_id = U1.id
-         LEFT OUTER JOIN reply R1 ON R1.post_id = P.id
-         LEFT OUTER JOIN user U2 ON R1.user_id = U2.id
-    WHERE P.id = #{id,jdbcType=INTEGER}
-    LIMIT #{offset,jdbcType=INTEGER},10
+            LEFT JOIN user U1 ON P.user_id = U1.id
+            LEFT JOIN reply R1 ON R1.post_id = P.id
+            LEFT JOIN user U2 ON R1.user_id = U2.id
+          WHERE P.id = #{id,jdbcType=INTEGER}
+          LIMIT #{offset,jdbcType=INTEGER},10) P1
+         LEFT JOIN dialogue D1 ON D1.reply_id = P1.reply_id
+         LEFT JOIN user U3 ON D1.send_user_id = U3.id
+         LEFT JOIN user U4 ON D1.receive_user_id = U4.id
   </select>
 
   <select id="selectAllPosts" resultMap="ResultMap" parameterType="int">
@@ -92,30 +128,70 @@
     P.read_number AS read_number,
     P.reply_number AS reply_number,
     P.content AS content,
-    U.user_name AS post_user_name
+    U.user_name AS post_user_name,
+    U.image_url AS post_user_image_url
     FROM post P
-      LEFT OUTER JOIN user U ON P.user_id = U.id
+      LEFT JOIN user U ON P.user_id = U.id
     ORDER BY P.id DESC
     LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 
   <select id="selectBaseByPrimaryKey" resultMap="ResultMap" parameterType="int">
     SELECT P.id AS id,
-    P.section_id AS section_id,
-    P.user_id AS user_id,
-    P.title AS title,
-    P.pulish_time AS pulish_time,
-    P.reply_time AS reply_time,
-    P.read_number AS read_number,
-    P.reply_number AS reply_number,
-    P.content AS content,
-    U.user_name AS post_user_name
+    section_id,user_id,title,pulish_time,reply_time,read_number,reply_number,content,
+    U.user_name AS post_user_name,
+     U.image_url AS post_user_image_url
     FROM post P
-    LEFT OUTER JOIN user U ON P.user_id = U.id
+    LEFT JOIN user U ON P.user_id = U.id
     WHERE P.id = #{id,jdbcType=INTEGER}
   </select>
 
-  <select id="selectNewPosts" resultMap="BaseResultMap">
+  <select id="selectUnreadRepliesByUserId" resultMap="ResultMapWithReplies" parameterType="java.lang.Integer">
+     SELECT
+     P.id AS id,
+     P.content AS content,
+     R.id AS reply_id,
+     R.content AS reply_content,
+     R.user_id AS reply_user_id,
+     U.user_name AS reply_user_name
+     FROM post P
+     LEFT JOIN reply R ON P.id = R.post_id
+     LEFT JOIN user U ON U.id = R.user_id
+     WHERE R.state = 0 AND P.user_id = #{userId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectUnreadDialoguesByUserId" resultMap="ResultMapWithReplies" parameterType="java.lang.Integer">
+     SELECT
+     P.id AS id,
+     P.content AS content,
+     R.id AS reply_id,
+     D.content AS dialogue_content,
+     D.id AS send_user_id,
+     U.user_name AS send_user_name
+     FROM post P
+     LEFT JOIN reply R ON P.id = R.post_id
+     LEFT JOIN dialogue D ON D.reply_id = R.id
+     LEFT JOIN user U ON U.id = D.send_user_id
+     WHERE D.reply_read = 0 AND R.user_id = #{userId,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectUnreadDialoguesP2PByUserId" resultMap="ResultMapWithReplies" parameterType="java.lang.Integer">
+      SELECT
+      P.id AS id,
+      P.content AS content,
+      R.id AS reply_id,
+      D.content AS dialogue_content,
+      D.id AS send_user_id,
+      U.user_name AS send_user_name
+      FROM post P
+      LEFT JOIN reply R ON P.id = R.post_id
+      LEFT JOIN dialogue D ON D.reply_id = R.id
+      LEFT JOIN user U ON U.id = D.send_user_id
+      WHERE D.receive_read = 0 AND D.receive_user_id = #{userId,jdbcType=INTEGER}
+  </select>
+
+
+    <select id="selectNewPosts" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
     FROM post
@@ -133,10 +209,12 @@
       P.read_number AS read_number,
       P.reply_number AS reply_number,
       P.content AS content,
-    U.user_name AS post_user_name
+      U.user_name AS post_user_name,
+      U.image_url AS post_user_image_url
     FROM post P
-    LEFT OUTER JOIN user U ON P.user_id = U.id
+    LEFT JOIN user U ON P.user_id = U.id
     WHERE P.section_id = #{sectionId,jdbcType=INTEGER}
+    ORDER BY P.reply_time DESC
     LIMIT #{offset,jdbcType=INTEGER},10
   </select>
 
@@ -146,6 +224,17 @@
     FROM post
     WHERE user_id = #{userId,jdbcType=INTEGER}
     LIMIT #{offset,jdbcType=INTEGER}
+  </select>
+
+  <select id="countPostsNumberBySectionId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    SELECT
+    COUNT(*) FROM post
+    WHERE section_id = #{sectionId,jdbcType=INTEGER}
+  </select>
+
+  <select id="countPostsNumber" resultType="java.lang.Integer">
+    SELECT
+    COUNT(*) FROM post
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >

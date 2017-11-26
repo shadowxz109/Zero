@@ -24,4 +24,6 @@ public interface ReplyService {
     List<Reply> findRepliesByUserId(int userId,int page);
 
     List<Reply> findAllReplies(int page);
+
+    int findReplyPageCountByPostId(int postId);
 }

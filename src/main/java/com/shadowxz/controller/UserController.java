@@ -9,6 +9,8 @@ import com.shadowxz.service.ReplyService;
 import com.shadowxz.service.UserService;
 import com.shadowxz.util.ImageUtil;
 import com.shadowxz.util.MD5Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by xz on 2017/4/29.
@@ -29,6 +28,8 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/api/user")
 public class UserController {
+
+    Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     UserService userService;
@@ -39,7 +40,7 @@ public class UserController {
     @Autowired
     ReplyService replyService;
 
-    @RequestMapping(value = "/user",method = {RequestMethod.POST})
+    @RequestMapping(value = "/user",method =RequestMethod.POST)
     public @ResponseBody Map<String,Object> postRegisterUser(HttpServletRequest request){
         String action = request.getParameter("action");
         Map<String,Object> result = new HashMap<>();
@@ -60,7 +61,7 @@ public class UserController {
                     result.put("resultCode",Constant.RETURN_CODE_ERR);
                     result.put("msg","该邮箱已注册");
                 }else {
-                    user = new User(userName, password, email, 0, validateCode, sex, selfIntroduce, 1, new Date(), 0);
+                    user = new User(userName, password, email, 0, validateCode, sex, selfIntroduce, 1, new Date(), 0,"30973043-960f-4ca7-8dde-1792af527e20");
                     userService.addUser(user);
                     result.put("resultCode", Constant.RETURN_CODE_SUCC);
                     result.put("msg", "注册成功，请到邮箱激活帐号再登录");
@@ -170,6 +171,7 @@ public class UserController {
         List<Post> posts = postService.findPostsByUserId(userId,page);
         Map<String,Object> result = new HashMap<>();
         result.put("posts",posts);
+        Integer.valueOf("1");
         return result;
     }
 
@@ -178,6 +180,15 @@ public class UserController {
         List<Reply> replies = replyService.findRepliesByUserId(userId,page);
         Map<String,Object> result = new HashMap<>();
         result.put("replies",replies);
+        return result;
+
+    }
+
+    @RequestMapping(value = "/{userId}/messages",method = RequestMethod.GET)
+    public @ResponseBody Map<String,Object> getUnreadMessage(@PathVariable int userId){
+        Map<String,Object> result = new HashMap<>();
+        Map<String,List<Post>> messages = userService.findUnreadMessage(userId);
+        result.put("messages",messages);
         return result;
     }
 

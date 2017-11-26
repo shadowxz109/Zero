@@ -4,6 +4,7 @@ import com.shadowxz.domain.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface UserDao {
@@ -33,4 +34,6 @@ public interface UserDao {
     List<User> selectAllUsers(int offset);
 
     User selectDetailUserById(int id);
+
+    int updateMessageNumberById(Map<String,Object> map);
 }

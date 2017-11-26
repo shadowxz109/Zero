@@ -1,5 +1,6 @@
 package com.shadowxz.service;
 
+import com.shadowxz.domain.Post;
 import com.shadowxz.domain.User;
 
 import java.util.List;
@@ -31,4 +32,9 @@ public interface UserService {
     void sendEmail(User user);
 
     User findUserDetailById(int id);
+
+    Map<String,List<Post>> findUnreadMessage(int id);
+
+    void updateMessageNumberById(int id,int number);
+
 }

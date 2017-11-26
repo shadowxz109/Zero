@@ -29,4 +29,6 @@ public interface ReplyDao {
     List<Reply> selectAllRepies(int offset);
 
     void deleteRepliesByPostId(int postId);
+
+    int countRepliesNumberByPostId(int postId);
 }
