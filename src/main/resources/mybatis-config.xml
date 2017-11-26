@@ -9,5 +9,6 @@
         <typeAlias alias="Post" type="com.shadowxz.domain.Post"/>
         <typeAlias alias="Reply" type="com.shadowxz.domain.Reply"/>
         <typeAlias alias="Admin" type="com.shadowxz.domain.Admin"/>
+        <typeAlias alias="Dialogue" type="com.shadowxz.domain.Dialogue"/>
     </typeAliases>
 </configuration>
