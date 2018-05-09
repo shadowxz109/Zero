@@ -17,9 +17,9 @@ import java.util.UUID;
  * Created by xz on 2017/6/12.
  */
 public class ImageUtil {
-        static String accessKey = "bt8ah3CXrV_H7_WI5YtLMVAtroC0gOOkG38UaRDc";
-        static String secretKey = "0KsKeBBKXoGJtN2ZkDXCfzKHy1ve2Mv_r8QBhAFR";
-        static String bucket = "zeroforum";
+        static String accessKey = "";
+        static String secretKey = "";
+        static String bucket = "";
 
     public static  String saveImg(MultipartFile multipartFile, String imgType) throws IOException {
         Configuration c = new Configuration(Zone.autoZone());
